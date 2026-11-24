@@ -156,8 +156,18 @@ return{ds,days,next,amount:Math.min(amount,s.reste),status:days<0?'late':days<=(
 function dueTxt(u){return u.status==='late'?`<span class="rd">En retard de ${-u.days} j</span>`:u.days===0?'<span class="am">Aujourd’hui</span>':u.status==='soon'?`<span class="am">Dans ${u.days} j</span>`:(u.next?'À jour · ':'')+'Échéance '+fdate(u.ds)}
 function endEst(i){const s=st(i);if(s.solde)return '';if(i.mensualite>0){const d=new Date();d.setMonth(d.getMonth()+Math.ceil(s.reste/i.mensualite));return d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}return i.echeance?fdate(i.echeance):''}
 const CFG=()=>{try{return JSON.parse(localStorage.getItem('dg_cfg'))}catch(e){return null}};
-function api(fn,...a){const c=CFG();if(!c)return Promise.reject(new Error('NOCFG'));
-return fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:c.token,fn,args:a})}).then(r=>r.json()).then(j=>{if(j.error)throw new Error(j.error);return j.data})}
+function jsonp(c,fn,a){return new Promise((ok,ko)=>{const cb='dgcb'+Date.now()+Math.floor(Math.random()*1e4),sc=document.createElement('script');let done=false,tm;
+const end=()=>{done=true;delete window[cb];sc.remove();clearTimeout(tm)};
+tm=setTimeout(()=>{if(!done){end();ko(new Error('Délai dépassé'))}},20000);
+window[cb]=j=>{end();j&&j.error?ko(Object.assign(new Error(j.error),{srv:1})):ok(j&&j.data)};
+sc.onerror=()=>{if(!done){end();ko(new Error('Script injoignable'))}};
+sc.src=c.url+(c.url.includes('?')?'&':'?')+'callback='+cb+'&token='+encodeURIComponent(c.token)+'&fn='+fn+'&args='+encodeURIComponent(JSON.stringify(a));
+document.head.appendChild(sc)})}
+async function api(fn,...a){const c=CFG();if(!c)throw new Error('NOCFG');
+try{const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),15000);
+const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:c.token,fn,args:a}),signal:ctl.signal});clearTimeout(t);
+const j=await r.json();if(j.error)throw Object.assign(new Error(j.error),{srv:1});return j.data}
+catch(e){if(e.srv)throw e;try{return await jsonp(c,fn,a)}catch(e2){if(e2.srv)throw e2;throw new Error(e2.message==='Délai dépassé'?'Le script ne répond pas (délai dépassé).':'Impossible de joindre le script. Vérifie : accès « Tout le monde » (même anonyme), URL finissant par /exec, nouvelle version déployée.')}}}
 function cacheSave(){try{localStorage.setItem('dg_cache',JSON.stringify({items:S.items,tx:S.tx,set:S.set,exp:S.exp,shop:S.shop}))}catch(e){}}
 async function sync(fn,...a){try{await api(fn,...a)}catch(e){toast('Échec de l’enregistrement : '+(e.message||e));load()}}
 function toast(m,undo){const t=$('#toast');t.innerHTML=esc(m)+(undo?' <b id="un">Annuler</b>':'');t.classList.add('on');if(undo)$('#un').onclick=()=>{undo();t.classList.remove('on')};clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),undo?5000:2500)}
@@ -403,8 +413,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a],[data-p
   else if(a==='tx')txSheet(id);else if(a==='editTx'){const t=S.tx.find(x=>x.id===id);payForm(t.itemId,null,t)}else if(a==='delTx')del('tx',id)});
 document.addEventListener('input',e=>{if(['f_mens','f_m','f_pd'].includes(e.target.id))hint()});
 document.addEventListener('change',e=>{const k={f_dev:'devise',s_nom:'nom',s_moy:'moyen',s_soon:'soonDays',s_bud:'budget'}[e.target.id];if(k){S.set[k]=e.target.value;render();sync('saveSettings',{[k]:e.target.value})}});
-function setup(msg){$('#nav').innerHTML='';$('#app').innerHTML=`<div class="hero"><div class="cap">Connexion à ton Google Sheet</div></div><div class="box"><div class="kv"><span>URL</span><input id="c_u" placeholder="https://script.google.com/…/exec" autocapitalize="off" autocorrect="off"></div><div class="kv"><span>Jeton</span><input id="c_t" type="password" autocapitalize="off" autocorrect="off"></div></div>${msg?`<div class="warn">${esc(msg)}</div>`:''}<div class="two one"><button class="pp" id="c_ok">Connecter</button></div>`;
-$('#c_ok').onclick=async()=>{const u=$('#c_u').value.trim(),t=$('#c_t').value.trim();if(!u||!t)return;localStorage.setItem('dg_cfg',JSON.stringify({url:u,token:t}));try{Object.assign(S,await api('getBootstrap'));S.loaded=1;render()}catch(e){localStorage.removeItem('dg_cfg');setup('Échec : '+e.message)}}}
+function setup(msg,u0,t0){$('#nav').innerHTML='';$('#app').innerHTML=`<div class="hero"><div class="cap">Connexion à ton Google Sheet</div></div><div class="box"><div class="kv"><span>URL</span><input id="c_u" placeholder="https://script.google.com/…/exec" autocapitalize="off" autocorrect="off" value="${esc(u0||'')}"></div><div class="kv"><span>Jeton</span><input id="c_t" type="password" autocapitalize="off" autocorrect="off" value="${esc(t0||'')}"></div></div>${msg?`<div class="warn">${esc(msg)}</div>`:''}<div class="two one"><button class="pp" id="c_ok">Connecter</button></div>`;
+$('#c_ok').onclick=async()=>{const raw=$('#c_u').value,u=raw.replace(/[\s"'“”\u200b-\u200d\ufeff]/g,''),t=$('#c_t').value.replace(/[\u200b-\u200d\ufeff]/g,'').trim();
+if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u))return setup('L’URL doit commencer par https://script.google.com/ et finir par /exec',raw,t);
+if(!t)return setup('Saisis le jeton',u,t);
+const b=$('#c_ok');b.disabled=true;b.textContent='Connexion… (jusqu’à 30 s)';
+localStorage.setItem('dg_cfg',JSON.stringify({url:u,token:t}));
+try{Object.assign(S,await api('getBootstrap'));S.loaded=1;render()}catch(e){localStorage.removeItem('dg_cfg');setup('Échec : '+e.message,u,t)}}}
 async function load(){if(!CFG())return setup();
 if(!S.loaded){try{const c=JSON.parse(localStorage.getItem('dg_cache'));if(c){Object.assign(S,c);render()}}catch(e){}}
 try{Object.assign(S,await api('getBootstrap'));S.loaded=1;render()}catch(e){if(/Jeton/.test(e.message))return setup(e.message);if(localStorage.getItem('dg_cache'))toast('Hors ligne : données en cache');else $('#app').innerHTML='<div class="empty">'+esc(e.message)+'<br><br><button class="pb" onclick="load()">Réessayer</button></div>'}}
