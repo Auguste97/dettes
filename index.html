@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Dettes</title>
 <meta name="theme-color" content="#f4f4f7"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Dettes"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="color-scheme" content="light dark"><script>try{const c=JSON.parse(localStorage.getItem('dg_cache')),t=(c&&c.set&&c.set.theme)||'auto',d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';if(navigator.standalone||matchMedia('(display-mode: standalone)').matches)document.documentElement.classList.add('sa')}catch(e){}</script>
 <style>
@@ -152,7 +152,7 @@ body.bh #app{background:none;padding-bottom:0}.sa body.bh::before{background:non
 .hmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
 .hsel{background:rgba(255,255,255,.16);border-radius:26px;padding:12px 18px 12px 22px;color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px}.hsel svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hamt{display:flex;align-items:center;gap:8px;justify-content:center;max-width:100%}
-.hamt input{background:none;border:0;outline:0;color:#fff;font:inherit;font-size:56px;font-weight:800;letter-spacing:-2px;text-align:center;min-width:2ch;max-width:62vw;padding:0;min-width:1.2ch}.hamt input::placeholder{color:rgba(255,255,255,.55)}
+.hamt input{background:none;border:0;outline:0;color:#fff;font:inherit;font-size:56px;font-weight:800;letter-spacing:-2px;text-align:center;min-width:2ch;max-width:62vw;padding:0;min-width:1.8ch}.hamt input::placeholder{color:rgba(255,255,255,.55)}
 .hamt em{font-style:normal;color:rgba(255,255,255,.7);font-size:20px;font-weight:600}
 .hplus{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:24px;line-height:1;display:grid;place-items:center;flex:none}
 .hsum{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;border:1px solid rgba(255,255,255,.22);border-radius:22px;background:rgba(0,0,0,.18);padding:14px 6px;text-align:center;margin-top:12px}
@@ -163,8 +163,20 @@ body.bh #app{background:none;padding-bottom:0}.sa body.bh::before{background:non
 .agr{width:100%;padding:10px 0 14px;text-align:center;color:var(--ink);font-size:15px;flex:none}.agr i{display:block;width:44px;height:5px;border-radius:3px;background:var(--ln);margin:0 auto 10px}
 .abd{overflow:auto;padding:0 18px 90px;flex:1;-webkit-overflow-scrolling:touch}
 nav{z-index:20}.seg.s5 button{font-size:12.5px;padding:9px 1px}
+
+:root{--nh:calc(66px + var(--sb))}
+*{touch-action:manipulation}
+body.bh{background:none}html.bh{background:#2a1f86}
+#bg{position:fixed;top:-140px;left:0;right:0;bottom:-140px;z-index:-1;display:none;background:linear-gradient(180deg,#8a7bff 0%,#8a7bff 14%,#5a49e6 34%,#2a1f86 64%,#120c3a 100%)}
+body.bh #bg{display:block}.sa body.bh::before{display:none}
+nav div{height:var(--nh);box-sizing:border-box}
+.hs{height:calc(100vh - var(--st) - var(--nh) - 86px);height:calc(100dvh - var(--st) - var(--nh) - 86px)}
+.act{bottom:0;top:auto;height:calc(100vh - var(--st) - 250px);height:calc(100dvh - var(--st) - 250px);transform:translateY(calc(100% - 64px - var(--nh)))}
+.act.open{transform:none}
+.abd{padding-bottom:calc(var(--nh) + 24px)}
+.hamt input::-webkit-outer-spin-button,.hamt input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.hamt input{-moz-appearance:textfield;appearance:textfield}
 </style></head>
-<body><div id="app"></div><nav><div id="nav"></div></nav><div id="act"></div><div id="ov"></div><div id="sh"></div><div id="toast"></div>
+<body><div id="bg"></div><div id="app"></div><nav><div id="nav"></div></nav><div id="act"></div><div id="ov"></div><div id="sh"></div><div id="toast"></div>
 <script>
 const _n=new Date(),S={items:[],tx:[],set:{devise:'FCFA',nom:''},tab:'home',sens:'DETTE',sd:false,exp:[],shop:[],acc:[],ca:'ALL',dv:'list',hk:'DEP',ha:'',ao:false,hide:false,bf:'ALL',hv:'ov',hm:0,rl:12,em:{y:_n.getFullYear(),m:_n.getMonth()},cal:{y:_n.getFullYear(),m:_n.getMonth(),sel:_n.getDate()}};let P={},PLAN='L';
 const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,10);
@@ -285,7 +297,7 @@ const HOPT=[['DETTE','Dette'],['CREANCE','Créance'],['DEP','Dépense'],['REV','
 const SVG=p=>`<svg viewBox="0 0 24 24">${p}</svg>`,EYE='<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',EYEOFF='<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>',SPARK='<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>',CHEV='<path d="M8 10l4-4 4 4M8 14l4 4 4-4"/>';
 function accueil(){const rD=sum(bySens('DETTE').filter(i=>!st(i).solde),i=>st(i).reste),tot=sum(accList(),a=>accBal(a)),nl=S.items.filter(late).length,hk=S.hk||'DEP',lab=(HOPT.find(x=>x[0]===hk)||HOPT[2])[1],ha=S.ha||'';
   return `<div class="hs ${S.hide?'hid':''}"><div class="ht"><div><button class="hp" data-a="hide" aria-label="Masquer les montants">${SVG(S.hide?EYEOFF:EYE)}</button><button class="hp" data-a="gobilan">${SVG(SPARK)}Bilan</button></div><button class="hp" data-a="gear" aria-label="Réglages">${SVG(IC.gear)}${nl?`<i class="hbd">${nl}</i>`:''}</button></div>
-  <div class="hmid"><button class="hsel" data-a="hsel">${lab}${SVG(CHEV)}</button><div class="hamt"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2,String(ha).length+.6)}ch"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div></div>
+  <div class="hmid"><button class="hsel" data-a="hsel">${lab}${SVG(CHEV)}</button><div class="hamt"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.8,String(ha).length+.9)}ch"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div></div>
   <div class="hsum"><button data-a="tab" data-t="debts"><small>Je dois</small><b class="am2">${money(rD)}</b></button><i></i><button data-a="tab" data-t="exp"><small>Solde total</small><b class="am2">${money(tot)}</b></button></div></div>`}
 function hSel(){sheet(`<h3 class="st">Que veux-tu enregistrer ?</h3><div style="margin-top:12px">${HOPT.map(([k,l])=>`<button class="r" data-a="hpick" data-t="${k}"><span class="ci" style="background:var(--soft)">${HI[k]}</span><span class="grow"><b>${l}</b></span>${(S.hk||'DEP')===k?'<span class="gr">✓</span>':''}</button>`).join('')}</div>`)}
 function hadd(){const v=parseFloat(S.ha)||'',k=S.hk||'DEP';S.ha='';
@@ -295,7 +307,9 @@ function hadd(){const v=parseFloat(S.ha)||'',k=S.hk||'DEP';S.ha='';
 function renderAct(){const A=$('#act');if(!A)return;if(S.tab!=='home'){A.style.display='none';return}A.style.display='block';A.className='act'+(S.ao?' open':'');
   const n=new Date(),nm=mkey(n.getFullYear(),n.getMonth()),spent=sum(S.exp.filter(e=>isDep(e)&&e.date.slice(0,7)===nm),e=>e.montant),toBuy=S.shop.filter(i=>{const x=sNext(i);return x&&x<=today()}).length,rec=recList().slice(0,30);
   A.innerHTML=`<button class="agr" data-a="actt"><i></i><span>${S.ao?'Glisse vers le bas pour fermer':'Glisse vers le haut pour les opérations'}</span></button><div class="abd"><div class="chips" style="justify-content:flex-start;margin:0 0 6px"><span class="chip">Dépensé ce mois · ${cmp(spent)} ${esc(S.set.devise)}</span><button class="chip" data-a="tab" data-t="shop">Courses à faire · ${toBuy}</button></div>${rec.length?rec.map(recRow).join(''):'<div class="empty">Aucune opération pour l’instant.</div>'}</div>`}
-let TY0=null;
+let TY0=null,LT0=0;
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('touchend',e=>{const n=Date.now();if(n-LT0<320&&!(e.target.closest&&e.target.closest('button,input,select,textarea,a,[data-a]')))e.preventDefault();LT0=n},{passive:false});
 document.addEventListener('touchstart',e=>{const g=e.target.closest&&e.target.closest('.agr');TY0=g?e.touches[0].clientY:null},{passive:true});
 document.addEventListener('touchend',e=>{if(TY0===null)return;const dy=e.changedTouches[0].clientY-TY0;TY0=null;if(Math.abs(dy)>30){S.ao=dy<0;renderAct()}},{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='h_amt'){e.preventDefault();hadd()}});
@@ -397,7 +411,7 @@ function setTab(){const th=S.set.theme||'auto',opt=(a,v)=>a.map(x=>`<option valu
 const IC={home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>',debts:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',exp:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10.5h18M7 15h3"/>',shop:'<path d="M3 4h2.5l2 11h10l2-8H7"/><circle cx="9.5" cy="19" r="1.2"/><circle cx="16.5" cy="19" r="1.2"/>',gear:'<path d="M19.05 10.11L21.48 10.50L21.48 13.50L19.05 13.89A7.3 7.3 0 0 1 18.32 15.65L19.77 17.64L17.64 19.77L15.65 18.32A7.3 7.3 0 0 1 13.89 19.05L13.50 21.48L10.50 21.48L10.11 19.05A7.3 7.3 0 0 1 8.35 18.32L6.36 19.77L4.23 17.64L5.68 15.65A7.3 7.3 0 0 1 4.95 13.89L2.52 13.50L2.52 10.50L4.95 10.11A7.3 7.3 0 0 1 5.68 8.35L4.23 6.36L6.36 4.23L8.35 5.68A7.3 7.3 0 0 1 10.11 4.95L10.50 2.52L13.50 2.52L13.89 4.95A7.3 7.3 0 0 1 15.65 5.68L17.64 4.23L19.77 6.36L18.32 8.35A7.3 7.3 0 0 1 19.05 10.11Z"/><circle cx="12" cy="12" r="3.1"/>'};
 const TABS={home:['Accueil',accueil,IC.home],debts:['Dettes',debtsView,IC.debts],exp:['Budget',expTab,IC.exp],shop:['Courses',shopTab,IC.shop]};
 function applyTheme(){const t=S.set.theme||'auto',de=document.documentElement;if(!de)return;const d=t==='dark'||(t==='auto'&&typeof matchMedia!=='undefined'&&matchMedia('(prefers-color-scheme: dark)').matches);de.dataset.theme=d?'dark':'light';const mt=document.querySelector('meta[name=theme-color]');if(mt&&mt.setAttribute)mt.setAttribute('content',d?'#101014':'#f4f4f7')}
-function render(){cacheSave();applyTheme();if(document.body)document.body.classList.toggle('bh',S.tab==='home');
+function render(){cacheSave();applyTheme();if(document.body)document.body.classList.toggle('bh',S.tab==='home');if(document.documentElement)document.documentElement.classList.toggle('bh',S.tab==='home');
   const T={debts:'Dettes',exp:'Budget',shop:'Courses',set:'Réglages'}[S.tab];
   $('#app').innerHTML=(S.tab==='home'?'':`<div class="top"><span class="tt">${T}</span><span class="tb"><button class="gb" data-a="gear" aria-label="Réglages"><svg viewBox="0 0 24 24">${IC.gear}</svg></button></span></div>`)+(S.tab==='set'?setTab:TABS[S.tab][1])();
   $('#nav').innerHTML=['home','debts','+','exp','shop'].map(k=>k==='+'?'<button class="plb" data-a="plus" aria-label="Ajouter">+</button>':`<button class="${S.tab===k?'on':''}" data-a="tab" data-t="${k}"><svg viewBox="0 0 24 24">${TABS[k][2]}</svg>${TABS[k][0]}</button>`).join('');
@@ -488,7 +502,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a],[data-p
   else if(a==='debt')detail(id);else if(a==='edit')debtForm(id);else if(a==='pay')payForm(id,D.amt);else if(a==='reopen')reopen(id);
   else if(a==='del'){if(confirm('Supprimer définitivement de la liste ?'))del('item',id)}
   else if(a==='tx')txSheet(id);else if(a==='editTx'){const t=S.tx.find(x=>x.id===id);payForm(t.itemId,null,t)}else if(a==='delTx')del('tx',id)});
-document.addEventListener('input',e=>{if(['f_mens','f_m','f_pd'].includes(e.target.id))hint();if(e.target.id==='h_amt'){S.ha=e.target.value;e.target.style.width=Math.max(1.2,e.target.value.length+.6)+'ch'}});
+document.addEventListener('input',e=>{if(['f_mens','f_m','f_pd'].includes(e.target.id))hint();if(e.target.id==='h_amt'){S.ha=e.target.value;e.target.style.width=Math.max(1.8,e.target.value.length+.9)+'ch'}});
 document.addEventListener('change',e=>{const k={f_dev:'devise',s_nom:'nom',s_moy:'moyen',s_soon:'soonDays',s_bud:'budget',s_cpt:'compteDef'}[e.target.id];if(k){S.set[k]=e.target.value;render();sync('saveSettings',{[k]:e.target.value})}});
 function setup(msg,u0,t0){$('#nav').innerHTML='';$('#app').innerHTML=`<div class="hero"><div class="cap">Connexion à ton Google Sheet</div></div><div class="box"><div class="kv"><span>URL</span><input id="c_u" placeholder="https://script.google.com/…/exec" autocapitalize="off" autocorrect="off" value="${esc(u0||'')}"></div><div class="kv"><span>Jeton</span><input id="c_t" type="password" autocapitalize="off" autocorrect="off" value="${esc(t0||'')}"></div></div>${msg?`<div class="warn">${esc(msg)}</div>`:''}<div class="two one"><button class="pp" id="c_ok">Connecter</button></div>`;
 $('#c_ok').onclick=async()=>{const raw=$('#c_u').value,u=raw.replace(/[\s"'“”\u200b-\u200d\ufeff]/g,''),t=$('#c_t').value.replace(/[\u200b-\u200d\ufeff]/g,'').trim();
