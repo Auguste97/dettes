@@ -129,7 +129,7 @@ button.tile{text-align:center}
 .pt{display:inline-block;padding:1px 7px;border-radius:8px;font-size:11px;font-weight:600;background:#e8590c22;color:#e8590c}.pt.b{background:var(--soft);color:var(--mu)}
 button.ck{padding:0}.hf2{justify-content:center}
 :root{color-scheme:light}html[data-theme=dark]{color-scheme:dark}
-.sa body::before{content:"";position:fixed;top:0;left:0;right:0;height:calc(var(--st) + 20px);pointer-events:none;z-index:60;background:linear-gradient(to bottom,rgba(21,21,28,.94) 0,rgba(21,21,28,.94) calc(var(--st) * .5),rgba(21,21,28,.5) var(--st),rgba(21,21,28,0) 100%)}.sa[data-theme=dark] body::before{background:linear-gradient(to bottom,var(--pg) 0,var(--pg) var(--st),transparent 100%)}
+.sa body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--st);pointer-events:none;z-index:60;background:var(--pg)}
 body{padding-bottom:calc(112px + var(--sb))}
 nav{background:none;border:0;backdrop-filter:none;padding:0}
 nav div{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:var(--bg);border-radius:26px 26px 0 0;box-shadow:0 -6px 26px rgba(0,0,0,.09);border-top:1px solid var(--ln);padding:9px 4px calc(9px + var(--sb))}
@@ -150,6 +150,7 @@ html[data-theme=dark]{--hb:#101014;--hc:#1b1b21;--cl:#3d3d46;--cs:#34343c;--ph:#
 body{padding-bottom:calc(130px + var(--sb));--pg:var(--bg)}
 body.bh{--pg:var(--hb);background:var(--hb)}html.bh{background:var(--hb)}
 body.bh #app{background:none}
+body.hm{padding-bottom:calc(14px + var(--sb))}
 #toast{bottom:calc(110px + var(--sb))}
 .hbar{display:flex;justify-content:space-between;align-items:center;padding-top:6px}
 .hbtn{width:40px;height:40px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--ink)}
@@ -157,11 +158,12 @@ body.bh .hbtn{background:var(--hc)}
 .hbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .ptt{font-size:27px;font-weight:800;letter-spacing:-.5px;margin:18px 0 16px}
 .hin{margin-left:15px;margin-right:15px}
-.hmx{display:block;padding-bottom:40px}
-.hsc{display:flex;align-items:flex-end;gap:16px;margin-top:10px;border-bottom:1.5px solid var(--cl);flex:none}
-.hbub{position:relative;flex:1;min-width:0;align-self:flex-start;margin:6px 0 30px;min-height:62px;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--hc);border:1.5px solid var(--cl);border-radius:24px;padding:11px 14px;font-size:14.5px;line-height:1.25;font-weight:700;color:var(--mu)}
+.hmx{display:block;overflow-x:clip}
+html,body{overflow-x:hidden}
+.hsc{display:flex;align-items:flex-end;justify-content:flex-end;gap:14px;margin-top:10px;border-bottom:1.5px solid var(--cl);flex:none}
+.hbub{position:relative;flex:0 1 auto;max-width:190px;min-width:0;align-self:flex-start;margin:22px 0 16px;min-height:0;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--hc);border:1.5px solid var(--cl);border-radius:8px;padding:9px 12px;font-size:14px;line-height:1.25;font-weight:700;color:var(--mu)}
 .hbub b{color:var(--ink);font-weight:800}
-.hbub::after{content:"";position:absolute;right:-7px;bottom:16px;width:12px;height:12px;background:var(--hc);border-top:1.5px solid var(--cl);border-right:1.5px solid var(--cl);transform:rotate(45deg);border-radius:0 3px 0 0}
+.hbub::after{content:"";position:absolute;right:-7px;bottom:16px;width:12px;height:12px;background:var(--hc);border-top:1.5px solid var(--cl);border-right:1.5px solid var(--cl);transform:rotate(45deg);border-radius:0 2px 0 0}
 .hbub.pop{animation:hpop .5s cubic-bezier(.2,1.3,.4,1) both;transform-origin:100% 80%}
 @keyframes hpop{0%{opacity:0;transform:scale(.82) translateY(6px)}60%{opacity:1}100%{opacity:1;transform:none}}
 .hadvb{flex:none;margin-right:6px;display:block}
@@ -170,13 +172,13 @@ html[data-theme=dark] .adv{filter:invert(1)}
 .hpickw{text-align:center;margin-top:22px}
 .hpill{display:inline-flex;align-items:center;gap:7px;background:var(--hc);border-radius:30px;padding:8px 13px 8px 17px;font-weight:600;font-size:14px;color:var(--ink)}
 .hpill svg{width:12px;height:12px;fill:none;stroke:var(--mu);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hamt{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 30px;max-width:100%}
-.hamt input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:46px;font-weight:600;letter-spacing:-1px;text-align:center;padding:0;min-width:1.2ch;max-width:100%;border-radius:0}
+.hamt{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 30px;width:100%;max-width:100%;overflow:hidden}
+.hamt input{background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:46px;font-weight:600;letter-spacing:-1px;text-align:center;padding:0;min-width:0;flex:0 1 auto;border-radius:0}
 .hamt input::placeholder{color:var(--ph);opacity:1}
 .hamt input::-webkit-outer-spin-button,.hamt input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .hamt input{-moz-appearance:textfield;appearance:textfield}
-.hamt em{font-style:normal;color:var(--mu);font-size:16px;font-weight:500;margin-top:8px}
-.hplus{width:34px;height:34px;border-radius:50%;background:var(--cs);color:var(--mu);font-size:24px;margin-top:6px;font-weight:300;line-height:1;display:grid;place-items:center;flex:none;transition:background .2s,color .2s}
+.hamt em{flex:none;font-style:normal;color:var(--mu);font-size:16px;font-weight:500;margin-top:8px}
+.hplus{flex:none;width:34px;height:34px;border-radius:50%;background:var(--cs);color:var(--mu);font-size:24px;margin-top:6px;font-weight:300;line-height:1;display:grid;place-items:center;flex:none;transition:background .2s,color .2s}
 .hamt.on .hplus{background:var(--ink);color:var(--bg)}
 .hcards{display:flex;flex-direction:column;gap:12px}
 .hcard{display:block;width:100%;text-align:left;background:var(--hc);border-radius:24px;padding:20px 22px}
@@ -349,6 +351,7 @@ function statsTab(){const rec=recList(),D=bySens('DETTE'),init=sum(D,i=>i.montan
 const HOPT=[['DETTE','Dette'],['CREANCE','Créance'],['DEP','Dépense'],['REV','Revenu'],['EPA','Épargne'],['SHOP','Course']],HI={DETTE:'🤝',CREANCE:'💰',DEP:'🛍️',REV:'💵',EPA:'🐖',SHOP:'🛒'};
 const SVG=p=>`<svg viewBox="0 0 24 24">${p}</svg>`,EYE='<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',EYEOFF='<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>',SPARK='<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>',CHEV='<path d="M8 10l4-4 4 4M8 14l4 4 4-4"/>';
 const dot=n=>{n=Math.round(n||0);return (n<0?'−':'')+String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')},shortN=n=>{n=Math.round(n||0);return n>=1e6?(Math.round(n/1e5)/10).toString().replace('.',',')+'M':dot(n)};
+const hfs=l=>Math.max(18,Math.min(46,Math.floor(200/(Math.max(l,3)*.62))));
 const HL={DETTE:'Dettes',CREANCE:'Créances',DEP:'Dépenses',REV:'Revenus',EPA:'Épargne',SHOP:'Courses'};
 const ADV=`<svg class="adv" viewBox="0 0 61 106" role="img" aria-label="Conseiller" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14.8972 67.2097C15.1989 65.637 15.5559 63.864 16.9684 62.9059C18.7732 61.6827 20.9557 62.6867 22.0472 64.3195C22.2017 64.5499 22.3453 64.7873 22.4774 65.0307C23.0824 64.3855 23.4374 64.2264 24.2599 64.7243C24.3773 64.9511 24.5173 65.2063 24.6174 65.4378C24.3542 66.5603 24.1578 66.7389 23.4366 67.5997C23.9498 68.8631 24.3021 69.5159 25.5957 70.0733C25.9619 70.2307 26.084 70.5583 26.21 70.9195C25.9773 71.7503 25.5923 72.2706 24.6099 71.9948C23.3909 71.6531 22.4595 70.5801 21.8771 69.5077C21.0084 67.8961 20.8903 65.383 19.0236 64.5575C18.8269 64.4703 18.5005 64.544 18.325 64.6571C16.8529 65.6052 17.5882 68.0422 16.229 68.9862C15.3638 69.5701 13.7096 69.4128 13.3091 70.576C13.11 71.154 13.8752 71.775 14.2751 72.0956C16.4178 73.8132 18.9162 75.083 21.6186 75.6251C22.4049 75.783 23.1971 76.0652 23.0577 77.0593C22.8279 78.2595 21.384 77.8518 20.5985 77.6632C17.3555 76.8854 14.8911 75.4059 12.3363 73.3235C11.6833 74.2592 10.904 75.1525 10.3336 76.12C7.47088 80.9747 6.17769 86.0951 4.91579 91.512C3.77067 96.4279 3.02324 101.051 2.20797 106H0C0.722399 101.046 1.63182 96.1221 2.72632 91.2374C4.09617 85.2137 6.21758 76.8354 10.6888 72.0414C10.7818 71.9418 11.058 71.8581 11.193 71.8216C10.6465 69.051 12.4621 67.7353 14.8972 67.2097Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
@@ -387,7 +390,7 @@ function accueil(){const h=homeStats(),hk=S.hk||'DEP',ha=S.ha||'',m=cowMsgs(h),p
   return `<div class="hmx ${S.hide?'hid':''}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide?'Afficher':'Masquer'} les montants">${SVG(S.hide?EYEOFF:EYE)}</button><button class="hbtn" data-a="gear" aria-label="Réglages">${SVG(IC.gear)}</button></div>
   <div class="hsc"><div class="hbub${pop}" id="cb"><span>${m[CM]}</span></div><button class="hadvb" data-a="cow" aria-label="Conseil suivant">${ADV}</button></div>
   <div class="hpickw"><button class="hpill" data-a="hsel">${HL[hk]||'Dépenses'}${SVG(CHEV)}</button></div>
-  <div class="hamt${+ha>0?' on':''}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2,String(ha).length+.2)}ch"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
+  <div class="hamt${+ha>0?' on':''}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2,String(ha).length+.2)}ch;font-size:${hfs(String(ha).length)}px"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
   <div class="hcards">${card('Dettes',h.rD,'debts',`<div class="hcs">On te doit : <b class="am2">${dot(h.rC)}</b></div>`,h.nl?`<i class="hbadge" aria-label="${h.nl} en retard">${h.nl}</i>`:'','dt')}
   ${card('Dépenses',h.spent,'DEP')}${card('Revenus',h.inc,'REV')}${card('Épargne',h.sav,'EPA')}${card('Courses',h.shV,'SHOP')}</div></div>`}
 function hSel(){sheet(`<h3 class="st">Que veux-tu enregistrer ?</h3><div style="margin-top:12px">${HOPT.map(([k,l])=>`<button class="r" data-a="hpick" data-t="${k}"><span class="ci" style="background:var(--soft)">${HI[k]}</span><span class="grow"><b>${l}</b></span>${(S.hk||'DEP')===k?'<span class="gr">✓</span>':''}</button>`).join('')}</div>`)}
@@ -608,7 +611,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a],[data-p
   else if(a==='debt')detail(id);else if(a==='edit')debtForm(id);else if(a==='pay')payForm(id,D.amt);else if(a==='reopen')reopen(id);
   else if(a==='del'){if(confirm('Supprimer définitivement de la liste ?'))del('item',id)}
   else if(a==='tx')txSheet(id);else if(a==='editTx'){const t=S.tx.find(x=>x.id===id);payForm(t.itemId,null,t)}else if(a==='delTx')del('tx',id)});
-document.addEventListener('input',e=>{if(['f_mens','f_m','f_pd'].includes(e.target.id))hint();if(e.target.id==='h_amt'){S.ha=e.target.value;e.target.style.width=Math.max(1.2,e.target.value.length+.2)+'ch';e.target.parentNode.classList.toggle('on',+e.target.value>0)}});
+document.addEventListener('input',e=>{if(['f_mens','f_m','f_pd'].includes(e.target.id))hint();if(e.target.id==='h_amt'){S.ha=e.target.value;e.target.style.width=Math.max(1.2,e.target.value.length+.2)+'ch';e.target.style.fontSize=hfs(e.target.value.length)+'px';e.target.parentNode.classList.toggle('on',+e.target.value>0)}});
 document.addEventListener('change',e=>{const k={f_dev:'devise',s_nom:'nom',s_moy:'moyen',s_soon:'soonDays',s_bud:'budget',s_cpt:'compteDef',s_lang:'lang'}[e.target.id];if(k){S.set[k]=e.target.value;render();sync('saveSettings',{[k]:e.target.value})}});
 function setup(msg,u0,t0){document.body.className='';document.documentElement.classList.remove('bh');$('#app').innerHTML=`<div class="hero"><div class="cap">Connexion à ton Google Sheet</div></div><div class="box"><div class="kv"><span>URL</span><input id="c_u" placeholder="https://script.google.com/…/exec" autocapitalize="off" autocorrect="off" value="${esc(u0||'')}"></div><div class="kv"><span>Jeton</span><input id="c_t" type="password" autocapitalize="off" autocorrect="off" value="${esc(t0||'')}"></div></div>${msg?`<div class="warn">${esc(msg)}</div>`:''}<div class="two one"><button class="pp" id="c_ok">Connecter</button></div>`;
 $('#c_ok').onclick=async()=>{const raw=$('#c_u').value,u=raw.replace(/[\s"'“”\u200b-\u200d\ufeff]/g,''),t=$('#c_t').value.replace(/[\u200b-\u200d\ufeff]/g,'').trim();
