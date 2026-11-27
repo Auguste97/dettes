@@ -2184,45 +2184,6 @@ html[data-theme=dark] {
     transition: none;
   }
 }
-
-/* ===== v5 : courses prioritaires, comptes responsables, conseiller ZBB ===== */
-.acc-current{
-  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
-  padding:10px 0 14px;border-bottom:1px solid var(--ln);margin:8px 0 12px
-}
-.acc-current .balance{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1.05}
-.acc-current .label{font-size:11px;color:var(--mu);margin-bottom:5px}
-.acc-current .spent{text-align:right}
-.acc-current .spent b{display:block;font-size:17px;font-weight:750}
-.acc-current .spent small{display:block;color:var(--mu);font-size:10px}
-.dd.urg{background:#e5484d!important;box-shadow:0 0 0 3px #e5484d22}.shop-priority{font-size:10px;font-weight:750;border-radius:20px;padding:3px 7px;margin-left:5px;white-space:nowrap}
-.shop-priority.high{background:#ffe7e7;color:#c52b35}
-.shop-priority.normal{background:#f1f1f4;color:#666}
-.shop-priority.low{background:#edf5fb;color:#47799a}
-.zbb-launch{
-  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-  margin:9px 0 3px;padding:12px 16px;border-radius:15px;background:var(--ink);
-  color:var(--bg);font-size:13px;font-weight:750
-}
-.zbb-card{background:var(--pg);border:1px solid var(--ln);border-radius:18px;padding:14px;margin:12px 0}
-.zbb-amount{display:flex;align-items:center;gap:9px;margin:10px 0 14px}
-.zbb-amount input{min-width:0;flex:1;border:0;border-bottom:1px solid var(--ln);background:transparent;padding:8px 2px;font-size:25px;font-weight:800;color:var(--ink)}
-.zbb-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:12px}
-.zbb-line:last-child{border-bottom:0}
-.zbb-line b{white-space:nowrap}
-.zbb-line small{display:block;color:var(--mu);font-size:10px;margin-top:2px}
-.zbb-total{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:5px;border-top:1px solid var(--ink);font-weight:800}
-.zbb-note{padding:10px 12px;border-radius:12px;background:var(--hb);font-size:11px;color:var(--mu);margin-top:10px;line-height:1.45}
-.adv{animation:advisorFloat 4.5s ease-in-out infinite;transform-origin:50% 70%}
-.adv .adv-eyes{transform-box:fill-box;transform-origin:center;animation:advisorBlink 5.2s infinite}
-.adv .adv-head{transform-box:fill-box;transform-origin:50% 90%;animation:advisorHead 6s ease-in-out infinite}
-.hsc .hbub:not(.pop){animation:bubbleFloat 5s ease-in-out infinite}
-@keyframes advisorFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(1deg)}}
-@keyframes advisorBlink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}
-@keyframes advisorHead{0%,100%{transform:rotate(0)}48%{transform:rotate(1.2deg)}}
-@keyframes bubbleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-@media(prefers-reduced-motion:reduce){.adv,.adv .adv-eyes,.adv .adv-head,.hsc .hbub:not(.pop){animation:none!important}}
-
 </style>
 </head>
 <body><div id="app"></div><div id="fab"></div><div id="ov"></div><div id="sh"></div><div id="toast"></div>
@@ -2462,80 +2423,6 @@ let EX = {};
 const cmp = (n) => sp(new Intl.NumberFormat(LOC(), { notation: "compact", maximumFractionDigits: 1 }).format(n || 0));
 const HOPT = [["DETTE", "Dette"], ["CREANCE", "Cr\xE9ance"], ["DEP", "D\xE9pense"], ["REV", "Revenu"], ["EPA", "\xC9pargne"], ["SHOP", "Course"]], HI = { DETTE: "\u{1F91D}", CREANCE: "\u{1F4B0}", DEP: "\u{1F6CD}\uFE0F", REV: "\u{1F4B5}", EPA: "\u{1F416}", SHOP: "\u{1F6D2}" };
 const SVG = (p) => `<svg viewBox="0 0 24 24">${p}</svg>`, EYE = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', EYEOFF = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>', SPARK = '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>', CHEV = '<path d="M8 10l4-4 4 4M8 14l4 4 4-4"/>';
-
-function zbbPlan(income) {
-  const T = today(), months = [];
-  for (let k = 2; k >= 0; k--) {
-    const d = new Date(T + "T12:00:00"); d.setDate(1); d.setMonth(d.getMonth() - k);
-    months.push(mkey(d.getFullYear(), d.getMonth()));
-  }
-  const exp3 = S.exp.filter(e => isDep(e) && months.includes(String(e.date).slice(0,7)));
-  const categoryNames = {LOGE:"Logement",FACT:"Factures",ALIM:"Alimentation",TRANS:"Transport",SANTE:"Santé",AUTRE:"Autres essentiels",LOIS:"Loisirs"};
-  const essentialKeys = ["LOGE","FACT","ALIM","TRANS","SANTE","AUTRE"];
-  const essential = essentialKeys.map(key => {
-    const v = sum(exp3.filter(e => (e.categorie || "AUTRE") === key), e => +e.montant || 0) / 3;
-    return {label:categoryNames[key], amount:Math.round(v), note:"Moyenne mensuelle observée sur 3 mois"};
-  }).filter(x => x.amount > 0);
-  const next30 = addDays(T,30);
-  const planned = S.shop.filter(i => {
-    const n = sNext(i); return n && n >= T && n <= next30;
-  });
-  const groceries = sum(planned, i => +i.prix || 0);
-  const leisureAverage = sum(exp3.filter(e => e.categorie === "LOIS"), e => +e.montant || 0) / 3;
-  const activeDebts = S.items.filter(i => i.type === "DETTE" && !st(i).solde);
-  const minimums = sum(activeDebts, i => { const paid = sum(S.tx.filter(t => t.itemId === i.id && String(t.date).slice(0,7) === T.slice(0,7)), t => +t.montant || 0); return +i.mensualite > 0 ? Math.max(0, +i.mensualite - paid) : late(i) ? Math.min(st(i).reste, Math.max(5000, income * .05)) : 0; });
-  const savingsRecorded = sum(S.exp.filter(e => e.type === "EPA"), e => +e.montant || 0);
-  const savingsTarget = 1000000;
-  const savingsNeed = Math.max(0, savingsTarget - savingsRecorded);
-  const savingsRate = savingsNeed > 0 ? Math.min(income * .10, savingsNeed) : 0;
-  const debtTarget = activeDebts.slice().sort((a,b) => (PR[b.priorite]||2)-(PR[a.priorite]||2) || dkey(a).localeCompare(dkey(b)))[0];
-  let left = Math.max(0, income), rows = [];
-  const allocate = (label, need, note, key) => {
-    const amount = Math.min(left, Math.max(0, Math.round(need)));
-    left -= amount;
-    rows.push({label, amount, need:Math.max(0,Math.round(need)), note, key});
-  };
-  essential.forEach(x => allocate(x.label, x.amount, x.note, "essential"));
-  if (groceries > 0) allocate("Courses planifiées", groceries, "Articles prévus dans les 30 prochains jours", "shopping");
-  if (minimums > 0) allocate("Remboursements minimums", minimums, "Mensualités et dettes prioritaires en retard", "debt");
-  if (savingsRate > 0) allocate("Épargne de sécurité", savingsRate, "10 % du revenu, jusqu’à 1 000 000 FCFA", "saving");
-  if (leisureAverage > 0) allocate("Loisirs / dépenses flexibles", Math.min(leisureAverage, income * .05), "Plafond conseillé : 5 % du revenu, selon tes dépenses passées", "flexible");
-  if (left > 0 && debtTarget) allocate("Remboursement supplémentaire", left, "À verser sur " + debtTarget.nom + " (priorité " + (PRL[debtTarget.priorite] || "Normale").toLowerCase() + ")", "extra");
-  if (left > 0) allocate("Marge de sécurité", left, "Reste affecté : imprévus et dépenses variables", "buffer");
-  const allocated = sum(rows, x => x.amount), shortfall = sum(rows, x => x.need) - allocated;
-  return {income, rows, allocated, shortfall:Math.max(0,shortfall), left, savingsRecorded, savingsTarget, targetDebt:debtTarget};
-}
-function zbbShow(income) {
-  const plan = zbbPlan(Math.max(0,Math.round(income || 0)));
-  const lines = plan.rows.map(x => `<div class="zbb-line"><span>${esc(x.label)}<small>${esc(x.note)}</small></span><b>${dot(x.amount)} ${esc(S.set.devise)}</b></div>`).join("");
-  sheet(`<h3 class="st">Plan d’allocation · ZBB</h3>
-    <p class="ss">Chaque franc du revenu est affecté à un besoin précis avant toute dépense.</p>
-    <div class="zbb-amount"><input id="zbb_income" type="number" inputmode="decimal" min="0" value="${plan.income}" placeholder="Revenu à répartir"><span>${esc(S.set.devise)}</span></div>
-    <button class="pp" id="zbb_recalc" style="width:100%">Recalculer la répartition</button>
-    <div class="zbb-card">${lines || '<div class="cap2">Saisis un revenu pour construire ton budget.</div>'}
-      <div class="zbb-total"><span>Total affecté</span><b>${dot(plan.allocated)} ${esc(S.set.devise)}</b></div>
-    </div>
-    ${plan.shortfall > 0 ? `<div class="warn">Tes besoins estimés dépassent ce revenu de ${dot(plan.shortfall)} ${esc(S.set.devise)}. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : `<div class="zbb-note">Budget équilibré : ${dot(plan.allocated)} ${esc(S.set.devise)} affectés sur ${dot(plan.income)}. ${plan.targetDebt ? "Le surplus est orienté vers " + esc(plan.targetDebt.nom) + "." : "Conserve la marge pour éviter de nouvelles dettes."}</div>`}
-    <div class="two"><button class="pb" data-a="close">Fermer</button><button class="pp" id="zbb_apply">Valider le plan</button></div>
-    <p class="cap2">Le plan est une recommandation calculée à partir de tes données enregistrées. Il ne crée pas automatiquement de transactions.</p>`);
-  $("#zbb_recalc").onclick = () => zbbShow(parseFloat($("#zbb_income").value) || 0);
-  $("#zbb_apply").onclick = () => {
-    const p = zbbPlan(parseFloat($("#zbb_income").value) || 0);
-    S.set.lastZbb = JSON.stringify({date:TODAY_SAFE(), income:p.income, rows:p.rows});
-    sync("saveSettings", {lastZbb:S.set.lastZbb});
-    toast("Plan sauvegardé dans les réglages");
-    closeSheet();
-  };
-}
-function TODAY_SAFE(){ return today(); }
-function zbbLaunch() {
-  const T = today(), ym = T.slice(0,7);
-  const thisMonth = sum(S.exp.filter(e => e.type === "REV" && String(e.date).slice(0,7) === ym), e => +e.montant || 0);
-  const recent = [];
-  for(let k=0;k<3;k++){const d=new Date(T+"T12:00:00");d.setDate(1);d.setMonth(d.getMonth()-k);const key=mkey(d.getFullYear(),d.getMonth());recent.push(sum(S.exp.filter(e=>e.type==="REV"&&String(e.date).slice(0,7)===key),e=>+e.montant||0));}
-  zbbShow(thisMonth || Math.round(sum(recent,x=>x)/3));
-}
-
 // === ACCUEIL ===
 const dot = (n) => {
   n = Math.round(n || 0);
@@ -2551,16 +2438,16 @@ const ADV = `<svg class="adv" viewBox="0 0 61 106" role="img" aria-label="Consei
 <path d="M5.64746 106C6.35825 100.869 7.22272 95.7603 8.23967 90.6811C8.60618 88.8397 9.03526 87.0008 9.44513 85.1688C9.78158 83.6651 11.8916 84.1123 11.5673 85.6166C10.12 92.3304 8.72072 99.182 7.86899 106H5.64746Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M40.8201 106C40.714 104.34 40.7364 102.537 40.7176 100.865C40.674 97.4455 40.7005 94.0256 40.7977 90.6068C40.8472 89.1025 40.836 87.5676 40.9686 86.0827C41.0446 85.2307 42.2048 84.9579 42.7887 85.4852C43.1747 85.8341 43.0421 86.2206 43.0857 86.702C43.0898 88.4432 42.9785 90.1909 42.9549 91.9356C42.8636 96.6235 42.8748 101.313 42.9891 106H40.8201Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M57.8295 106C57.4666 102.552 56.9699 99.1201 56.3394 95.7108C56.1514 94.7003 55.9493 93.6921 55.7319 92.6869C55.551 91.8861 54.9924 90.3571 55.5469 89.7024C55.7295 89.488 55.9906 89.3572 56.2716 89.3389C56.8037 89.3047 57.2768 89.6806 57.413 90.1738C57.6498 91.0318 57.816 91.9598 58.0016 92.8307C58.9037 97.1833 59.5843 101.578 60.0421 106H57.8295Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
-<g class="adv-head"><path d="M18.6012 0.0098925C20.2651 -0.15633 22.112 1.81047 22.9991 3.03065C24.4446 2.92665 25.9182 2.9131 27.3533 3.13164C27.7809 2.52974 28.2567 1.96367 28.7764 1.43925C31.8286 -1.59376 33.6741 0.680439 34.0912 4.03847C34.1979 4.89993 34.1843 5.66039 34.1449 6.51867C37.6308 4.83193 41.3471 4.36956 44.4824 7.09547C46.7851 9.09744 48.9711 12.9169 49.228 15.9614C52.1041 15.0158 54.7586 13.5173 55.1174 10.2014C55.1952 8.85963 55.1316 7.65689 55.0055 6.28799C54.8564 4.6716 55.0149 2.63657 56.9541 2.17768C57.5716 2.03155 58.5697 2.42339 59.0794 2.78512C59.9745 3.42037 60.1677 4.5656 60.3032 5.58421C60.7581 9.03569 60.2803 13.1724 58.0129 15.9618C55.3855 19.1938 52.4629 20.4463 48.4744 20.9269C48.3242 21.2045 48.1462 21.499 47.9865 21.7741C48.7001 22.2779 49.7383 23.3093 50.3588 23.9497C52.6079 26.2689 54.24 28.6876 55.5464 31.6687C58.4648 38.3304 57.6706 48.5086 50.228 51.8148C49.2551 52.2473 47.5269 52.5578 46.5028 52.1206C46.3714 51.9644 46.2165 51.7217 46.0986 51.549C44.3527 54.0238 41.7507 55.372 38.9047 56.1945C37.7675 58.3995 37.5718 59.156 37.6708 61.5884C37.7097 62.5506 35.4105 63.4545 35.4412 60.7181C35.4659 58.4778 36.031 56.4456 37.3756 54.6007C37.685 54.1758 39.4214 53.7539 39.9364 53.5442C40.6052 53.2643 41.251 52.9331 41.8685 52.5543C43.5838 51.4848 44.9125 49.8921 45.3845 47.8952C45.6891 46.5559 45.5501 45.2666 44.2968 44.4659C43.1572 43.7374 42.4071 44.2369 41.416 44.9496C40.6865 45.5448 40.2328 46.1546 39.283 45.642C38.9312 45.8105 38.8293 45.847 38.4604 45.9531C37.8665 45.8123 37.3314 45.6773 36.7675 45.4381C35.6822 44.9791 34.7282 44.2579 33.9899 43.339C32.2169 41.1746 32.422 38.7236 32.5033 36.1116C32.5333 35.1565 32.5204 34.173 32.1497 33.2761C31.0938 30.7186 29.5335 32.4845 28.5189 32.0136C28.1453 31.8402 28.0275 31.4876 27.9014 31.1265L28.0404 30.5037C27.7855 30.3304 27.4931 30.1649 27.2266 30.006C26.8545 30.3528 26.3054 30.707 25.8175 30.4746C24.8302 30.0044 25.4259 28.5394 24.0586 28.2454C19.0816 27.1752 14.521 30.661 11.9733 34.645C11.3026 35.6938 11.1021 36.316 9.7747 35.9558C9.62273 36.0906 10.1962 36.7765 10.1011 37.1443C9.90321 37.862 9.59716 38.5668 9.34797 39.2749C7.75563 43.8004 7.13222 48.8291 9.56628 53.2036C11.2789 56.2912 14.3332 57.5893 17.6977 58.0288C19.3979 58.2516 20.8148 58.4943 22.513 58.0441C23.522 57.7766 24.2299 57.3801 24.8055 58.4819L24.843 58.5544C24.8306 59.4318 24.78 60.3174 24.7498 61.1971C24.7215 62.0238 25.0338 63.1805 24.4704 63.854C24.2139 64.2146 23.2273 64.227 22.973 63.8958C22.3779 63.1216 22.5649 61.2667 22.5716 60.3121C21.5811 60.4718 20.576 60.5207 19.5747 60.4588C11.5757 60.0269 6.3872 56.0885 5.79661 47.7355C5.74612 47.0214 5.73233 46.3815 5.77322 45.6603L5.16053 45.8358L5.1058 45.8199C3.56089 45.3515 2.27283 43.9274 1.56692 42.5228C-0.409301 38.5902 -0.303061 33.9723 0.932677 29.8735C2.93088 23.246 8.96315 17.5941 14.9597 14.4281C14.7849 14.0694 14.6534 13.6913 14.5681 13.3016C13.985 10.7452 15.2594 8.59448 16.554 6.538C16.3149 5.11913 16.3157 2.53334 17.0402 1.23597C17.4536 0.495538 17.831 0.238691 18.6012 0.0098925Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
+<path d="M18.6012 0.0098925C20.2651 -0.15633 22.112 1.81047 22.9991 3.03065C24.4446 2.92665 25.9182 2.9131 27.3533 3.13164C27.7809 2.52974 28.2567 1.96367 28.7764 1.43925C31.8286 -1.59376 33.6741 0.680439 34.0912 4.03847C34.1979 4.89993 34.1843 5.66039 34.1449 6.51867C37.6308 4.83193 41.3471 4.36956 44.4824 7.09547C46.7851 9.09744 48.9711 12.9169 49.228 15.9614C52.1041 15.0158 54.7586 13.5173 55.1174 10.2014C55.1952 8.85963 55.1316 7.65689 55.0055 6.28799C54.8564 4.6716 55.0149 2.63657 56.9541 2.17768C57.5716 2.03155 58.5697 2.42339 59.0794 2.78512C59.9745 3.42037 60.1677 4.5656 60.3032 5.58421C60.7581 9.03569 60.2803 13.1724 58.0129 15.9618C55.3855 19.1938 52.4629 20.4463 48.4744 20.9269C48.3242 21.2045 48.1462 21.499 47.9865 21.7741C48.7001 22.2779 49.7383 23.3093 50.3588 23.9497C52.6079 26.2689 54.24 28.6876 55.5464 31.6687C58.4648 38.3304 57.6706 48.5086 50.228 51.8148C49.2551 52.2473 47.5269 52.5578 46.5028 52.1206C46.3714 51.9644 46.2165 51.7217 46.0986 51.549C44.3527 54.0238 41.7507 55.372 38.9047 56.1945C37.7675 58.3995 37.5718 59.156 37.6708 61.5884C37.7097 62.5506 35.4105 63.4545 35.4412 60.7181C35.4659 58.4778 36.031 56.4456 37.3756 54.6007C37.685 54.1758 39.4214 53.7539 39.9364 53.5442C40.6052 53.2643 41.251 52.9331 41.8685 52.5543C43.5838 51.4848 44.9125 49.8921 45.3845 47.8952C45.6891 46.5559 45.5501 45.2666 44.2968 44.4659C43.1572 43.7374 42.4071 44.2369 41.416 44.9496C40.6865 45.5448 40.2328 46.1546 39.283 45.642C38.9312 45.8105 38.8293 45.847 38.4604 45.9531C37.8665 45.8123 37.3314 45.6773 36.7675 45.4381C35.6822 44.9791 34.7282 44.2579 33.9899 43.339C32.2169 41.1746 32.422 38.7236 32.5033 36.1116C32.5333 35.1565 32.5204 34.173 32.1497 33.2761C31.0938 30.7186 29.5335 32.4845 28.5189 32.0136C28.1453 31.8402 28.0275 31.4876 27.9014 31.1265L28.0404 30.5037C27.7855 30.3304 27.4931 30.1649 27.2266 30.006C26.8545 30.3528 26.3054 30.707 25.8175 30.4746C24.8302 30.0044 25.4259 28.5394 24.0586 28.2454C19.0816 27.1752 14.521 30.661 11.9733 34.645C11.3026 35.6938 11.1021 36.316 9.7747 35.9558C9.62273 36.0906 10.1962 36.7765 10.1011 37.1443C9.90321 37.862 9.59716 38.5668 9.34797 39.2749C7.75563 43.8004 7.13222 48.8291 9.56628 53.2036C11.2789 56.2912 14.3332 57.5893 17.6977 58.0288C19.3979 58.2516 20.8148 58.4943 22.513 58.0441C23.522 57.7766 24.2299 57.3801 24.8055 58.4819L24.843 58.5544C24.8306 59.4318 24.78 60.3174 24.7498 61.1971C24.7215 62.0238 25.0338 63.1805 24.4704 63.854C24.2139 64.2146 23.2273 64.227 22.973 63.8958C22.3779 63.1216 22.5649 61.2667 22.5716 60.3121C21.5811 60.4718 20.576 60.5207 19.5747 60.4588C11.5757 60.0269 6.3872 56.0885 5.79661 47.7355C5.74612 47.0214 5.73233 46.3815 5.77322 45.6603L5.16053 45.8358L5.1058 45.8199C3.56089 45.3515 2.27283 43.9274 1.56692 42.5228C-0.409301 38.5902 -0.303061 33.9723 0.932677 29.8735C2.93088 23.246 8.96315 17.5941 14.9597 14.4281C14.7849 14.0694 14.6534 13.6913 14.5681 13.3016C13.985 10.7452 15.2594 8.59448 16.554 6.538C16.3149 5.11913 16.3157 2.53334 17.0402 1.23597C17.4536 0.495538 17.831 0.238691 18.6012 0.0098925Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M22.0258 5.17216C23.2067 5.27645 24.7958 5.03345 26.0516 5.12967C26.5836 5.09627 27.8729 5.64914 28.2786 5.26926C29.3822 4.23493 29.9691 2.9983 31.3108 2.15063C31.8735 3.31154 32.0456 4.36638 32.0108 5.65321C31.9978 6.13049 31.9389 6.6268 32.0603 7.09435C32.1846 7.57104 32.4934 8.01892 32.7314 8.44605C33.0932 9.09615 33.3696 9.8248 33.4862 10.5618C33.6165 11.3877 33.5369 12.2526 33.1969 13.0205C31.8989 15.9548 27.9693 15.7491 27.3592 16.6853C27.2083 16.9169 27.1952 17.326 27.2681 17.5846C27.342 17.847 27.5221 18.0503 27.7655 18.1695C28.3611 18.4612 29.1731 18.182 29.7617 17.9805C32.0031 17.2135 33.983 16.2884 35.0642 14.0466C35.9545 12.2002 35.7683 10.3132 35.1013 8.4335C37.625 7.12847 40.6596 6.63369 42.987 8.66006C46.1547 11.4178 48.8941 17.3569 45.7947 21.0967C43.6859 23.6412 40.3037 23.7733 37.2609 24.0212C36.4418 24.0555 32.2948 24.3943 32.1334 23.614C32.9017 21.5148 34.9033 21.5544 36.7877 21.7539C37.5796 21.8378 39.6573 22.6986 39.9024 21.367C40.0921 20.3351 39.2283 20.0268 38.3733 19.8836C37.143 15.7659 40.1322 16.5386 40.6702 15.2222C40.7639 14.9926 40.7444 14.7538 40.6454 14.5299C40.451 14.09 40.141 13.927 39.7121 13.764C37.4801 14.2374 35.852 16.0286 35.9433 18.3651C35.9581 18.7445 35.9964 19.1248 36.0311 19.5029C33.1498 19.4718 30.8541 20.2857 30.0021 23.2709C28.6245 23.4663 26.8726 23.3913 25.4772 23.2991C24.9494 23.2642 23.9542 22.8765 23.7129 22.4238C22.7721 20.6819 26.4272 21.0401 27.2079 21.2228C28.0871 21.4285 29.1035 21.6971 29.4258 20.4663C29.4759 20.2782 29.4459 20.0779 29.3439 19.9124C29.0582 19.4528 28.3387 19.2368 27.8321 19.1445C26.2548 18.8572 23.9719 18.689 22.5751 19.6326C22.0064 19.0974 21.5572 18.7837 20.9213 18.3512L20.9699 18.338C21.5531 18.1735 22.1339 17.6404 21.9249 16.9636C21.7243 16.3139 20.6062 16.0961 20.0193 15.8827C19.6586 15.7527 19.307 15.5983 18.967 15.4209C15.8645 13.8105 16.1236 11.256 17.7715 8.62983C18.0779 8.14165 18.4576 7.63055 18.7189 7.12258C18.6941 5.41186 18.2483 3.96977 18.9194 2.19406C20.4476 2.72472 21.1875 4.54522 22.0258 5.17216Z" fill="white" style="fill:white;fill-opacity:1;"/>
-<g class="adv-eyes"><path d="M20.6526 9.74537C21.2623 9.63354 21.8479 10.0351 21.9634 10.6442C22.0788 11.2532 21.6807 11.8412 21.0723 11.9602C20.4589 12.0803 19.8649 11.6781 19.7484 11.064C19.6321 10.4497 20.0377 9.85809 20.6526 9.74537Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
-<path d="M27.0125 9.74585C27.6216 9.63395 28.2068 10.0346 28.3229 10.643C28.439 11.2514 28.0424 11.8394 27.4349 11.9597C26.8214 12.0812 26.2263 11.6798 26.109 11.0655C25.9918 10.4512 26.3973 9.8588 27.0125 9.74585Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/></g>
+<path d="M20.6526 9.74537C21.2623 9.63354 21.8479 10.0351 21.9634 10.6442C22.0788 11.2532 21.6807 11.8412 21.0723 11.9602C20.4589 12.0803 19.8649 11.6781 19.7484 11.064C19.6321 10.4497 20.0377 9.85809 20.6526 9.74537Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
+<path d="M27.0125 9.74585C27.6216 9.63395 28.2068 10.0346 28.3229 10.643C28.439 11.2514 28.0424 11.8394 27.4349 11.9597C26.8214 12.0812 26.2263 11.6798 26.109 11.0655C25.9918 10.4512 26.3973 9.8588 27.0125 9.74585Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M57.2803 4.31061C57.8348 4.3868 58.0003 4.66927 58.0893 5.22209C58.5413 8.12005 58.424 11.4857 56.7677 14.0123C55.109 16.5432 52.788 17.8665 49.919 18.5324C49.7004 18.5784 49.5837 18.6191 49.3598 18.5884C49.1725 18.4646 49.2196 18.5454 49.1719 18.366C49.3074 18.1228 49.8984 17.9716 50.1488 17.8966C55.4307 16.3136 58.021 12.5815 57.2167 7.09679C57.1153 6.40698 57.0151 4.9709 57.2803 4.31061Z" fill="white" style="fill:white;fill-opacity:1;"/>
 <path d="M19.4229 20.2078C20.1601 20.1981 20.9802 21.0586 21.4716 21.5578C21.1881 22.0755 21.1554 22.2851 20.4966 22.191C19.9621 22.1238 18.8547 22.0349 18.4779 21.6231C18.027 21.1305 19.0377 20.4127 19.4229 20.2078Z" fill="white" style="fill:white;fill-opacity:1;"/>
 <path d="M18.3486 17.542C18.7181 17.6766 19.1704 17.8268 19.5132 18.0025L19.3962 18.0424C19.0018 18.1068 18.8014 18.1684 18.421 18.2845C18.3988 18.0368 18.3747 17.7893 18.3486 17.542Z" fill="white" style="fill:white;fill-opacity:1;"/>
 <path d="M41.166 61.9466C43.3568 61.6997 44.9436 62.9018 45.458 65.01C46.4343 65.0519 47.1461 65.1603 47.9876 65.7148C48.9663 66.3535 49.6486 67.357 49.8825 68.5012C50.0976 69.5766 49.9014 70.8358 49.2821 71.7515L49.4984 71.8369C49.8837 71.9877 49.9756 72.0431 50.2219 72.3984C50.6845 73.066 51.117 73.799 51.5235 74.5014C53.5075 77.9832 55.112 81.6682 56.3105 85.4924C56.568 86.3308 57.1148 87.184 56.2015 87.8452C55.812 88.1268 54.9523 87.983 54.759 87.5517C54.2423 86.3998 53.9035 85.1494 53.4739 83.9562C52.7615 81.9982 51.9466 80.0791 51.0321 78.2065C50.0911 76.2927 49.1236 74.9327 48.1643 73.1768C44.4433 76.6256 38.016 78.6808 33.0305 79.184C32.6381 79.2182 32.2038 79.2848 31.8202 79.2064C30.7985 79.0473 30.8144 77.3851 31.7371 77.1771C32.7748 76.9438 33.9297 76.8872 34.9909 76.7098C37.6607 76.2502 40.2486 75.3994 42.6703 74.185C44.4027 73.32 46.9894 71.9895 47.6753 70.0509C48.0701 68.7859 47.2304 67.3487 45.8593 67.2415C44.8994 67.166 43.672 68.1807 43.028 67.0252C42.7846 66.5886 43.1341 65.8356 43.2849 65.3901C43.1718 64.9894 42.9685 64.5381 42.5867 64.3442C40.2327 63.3078 37.2836 66.5432 35.7209 67.9485C33.5985 69.8565 31.9068 71.4509 29.0726 72.1916C27.9908 72.4744 27.1941 71.491 27.7937 70.5924C28.1351 70.0804 29.3395 69.84 29.8716 69.5566C33.8701 67.8849 36.6702 62.471 41.166 61.9466Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M14.3604 38.8932C16.174 39.2019 16.1245 41.5918 14.5747 42.0201C12.8654 41.9782 12.5558 39.4442 14.3604 38.8932Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
-<path d="M20.3896 39.365C22.1563 39.2574 22.5183 41.7113 20.9226 42.4292C19.2258 42.5784 18.7297 40.1808 20.3896 39.365Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/></g>
+<path d="M20.3896 39.365C22.1563 39.2574 22.5183 41.7113 20.9226 42.4292C19.2258 42.5784 18.7297 40.1808 20.3896 39.365Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 </svg>`;
 const CHEVR = '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>', BACK = '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>';
 
@@ -2617,7 +2504,7 @@ function accueil() {
   CM = CM % m.length;
   const card = (t, v, k, extra, badge, cls) => `<button class="hcard ${cls || ""}" data-a="hgo" data-t="${k}"><div class="hct">${t}</div><div class="hcv"><span class="am2">${dot(v)}</span>${CHEVR}${badge || ""}</div>${extra || ""}</button>`;
   return `<div class="hmx ${S.hide ? "hid" : ""}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide ? "Afficher" : "Masquer"} les montants">${SVG(S.hide ? EYEOFF : EYE)}</button><button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button></div>
-  <div class="hsc"><div class="hbub${pop}" id="cb"><span>${m[CM]}</span></div><button class="hadvb" data-a="cow" aria-label="Conseil suivant">${ADV}</button></div><button class="zbb-launch" data-a="zbb">✦ Construire mon plan d’allocation (ZBB)</button>
+  <div class="hsc"><div class="hbub${pop}" id="cb"><span>${m[CM]}</span></div><button class="hadvb" data-a="cow" aria-label="Conseil suivant">${ADV}</button></div>
   <div class="hpickw"><button class="hpill" data-a="hsel">${HL[hk] || "D\xE9penses"}${SVG(CHEV)}</button></div>
   <div class="hamt${+ha > 0 ? " on" : ""}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2, String(ha).length + 0.2)}ch;font-size:${hfs(String(ha).length)}px"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
   <div class="hcards">${card("Dettes", h.rD, "debts", "", h.nl ? `<i class="hbadge" aria-label="${h.nl} en retard">${h.nl}</i>` : "", "dt")}
@@ -2696,21 +2583,8 @@ function accList() {
   return l;
 }
 
-function loanRoom(accountId) {
-  if (!accountId) return 0;
-  return sum(S.items.filter(i => i.type === "DETTE" && i.loanAccountId === accountId && !st(i).solde), i => st(i).reste);
-}
 function accBal(a, upto) {
   return (+a.solde || 0) + sum(flows().filter((x) => (a.id === "" ? unas({ compte: x.c }) : x.c === a.id) && (!upto || x.d <= upto)), (x) => x.v);
-}
-function accountCanSpend(accountId, amount, addBack = 0) {
-  if (!accountId || !acOf(accountId)) return { ok: true };
-  const a = acOf(accountId), projected = accBal(a) + addBack - amount;
-  const permitted = loanRoom(accountId);
-  return { ok: projected >= -permitted, balance: accBal(a), projected, permitted, missing: Math.max(0, -permitted - projected) };
-}
-function accountExpenseTotal(accountId) {
-  return sum(flows().filter(x => x.c === accountId && x.v < 0), x => -x.v);
 }
 
 function defAcc() {
@@ -2729,7 +2603,7 @@ function accForm(id) {
   $("#ok").onclick = () => {
     const n = $("#a_n").value.trim();
     if (!n) return toast("Nom requis");
-    const opening = parseFloat($("#a_s").value) || 0; if (opening < 0) return toast("Le solde initial ne peut pas être négatif."); const o = { ...AC, nom: n, solde: opening, creeLe: AC.creeLe || today() };
+    const o = { ...AC, nom: n, solde: parseFloat($("#a_s").value) || 0, creeLe: AC.creeLe || today() };
     const k = S.acc.findIndex((x) => x.id === o.id);
     k < 0 ? S.acc.push(o) : S.acc[k] = o;
     S.ca = o.id;
@@ -2977,11 +2851,12 @@ function accSheet() {
     <div class="acard">
       ${a.virt ? "" : `<button class="aedit" data-a="editAcc" data-id="${a.id}" aria-label="Modifier">${SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')}</button>`}
       <div class="an">${esc(a.nom)}</div>
-      <div class="acc-current">
-        <div><div class="label">Solde actuel</div><div class="balance">${dot(accBal(a))}<small style="font-size:12px;color:var(--mu);font-weight:600"> ${esc(S.set.devise)}</small></div></div>
-        <div class="spent"><small>Dépenses cumulées</small><b>${dot(a.id === "" ? sum(flows().filter(x => unas({compte:x.c}) && x.v < 0), x => -x.v) : accountExpenseTotal(a.id))}</b><small>${esc(S.set.devise)}</small></div>
+      <div class="pbig">${dot(accBal(a))}<em>${esc(S.set.devise)}</em></div>
+      ${barChart(vals, P2)}
+      <div class="astats">
+        <div><b>${mdot(week)}</b><small>Total d\xE9pens\xE9 cette semaine</small></div>
+        <div><b>${mdot(month)}</b><small>Total d\xE9pens\xE9 ce mois</small></div>
       </div>
-      ${loanRoom(a.id) > 0 ? `<div class="cap2">Crédit / découvert autorisé lié : ${mdot(loanRoom(a.id))}</div>` : ""}
     </div>
     ${a.virt ? '<button class="lk" data-a="assign">Affecter les anciennes op\xE9rations</button>' : ""}
     <div class="sx"><span>Activit\xE9s li\xE9es au compte</span></div>
@@ -3162,7 +3037,7 @@ function expForm(id, pre) {
   <div class="box"><div class="kv"><span>Libell\xE9</span><input id="x_l" placeholder="Optionnel" value="${esc(EX.libelle)}"></div><div class="kv"><span>Date</span><input id="x_d" type="date" value="${EX.date}"></div></div>
   <div class="hl" style="text-align:center">Moyen</div><div class="chips">${Object.keys(MOY).map((k) => `<button class="chip ${EX.moyen === k ? "on" : ""}" data-xm="${k}">${MOY[k]}</button>`).join("")}</div>
   <div class="box"><div class="kv"><span>Note</span><input id="x_n" placeholder="Optionnel" value="${esc(EX.note)}"></div></div>
-  <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e ? `<div class="two"><button class="pb" data-a="toShop" data-id="${id}">Transformer en course</button><button class="pb rd" data-a="delExp" data-id="${id}">Supprimer</button></div>` : ""}`);
+  <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e ? `<button class="lk" data-a="delExp" data-id="${id}">Supprimer</button>` : ""}`);
   $("#ok").onclick = () => {
     const v = parseFloat($("#x_m").value), d = $("#x_d").value;
     if (!(v > 0) || !d) return toast("Montant et date requis");
@@ -3177,12 +3052,6 @@ function expForm(id, pre) {
         sync("saveSettings", { [k2]: S.set[k2] });
       }
     }
-    const oldExpense = S.exp.find(x => x.id === EX.id);
-    if (T !== "REV" && EX.compte) {
-      const addBack = oldExpense && oldExpense.compte === EX.compte && oldExpense.type !== "REV" ? (+oldExpense.montant || 0) : 0;
-      const check = accountCanSpend(EX.compte, v, addBack);
-      if (!check.ok) return toast("Solde insuffisant sur ce compte. Enregistre un emprunt lié à ce compte si tu utilises un crédit.");
-    }
     const o = { ...EX, type: T, montant: v, date: d, source: T === "DEP" ? "" : src, libelle: $("#x_l").value.trim(), note: $("#x_n").value.trim(), creeLe: EX.creeLe || (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", " ") };
     const k = S.exp.findIndex((x) => x.id === o.id);
     k < 0 ? S.exp.push(o) : S.exp[k] = o;
@@ -3191,32 +3060,11 @@ function expForm(id, pre) {
     sync("saveExpense", o);
   };
 }
-
-function expenseToShop(id) {
-  const e = S.exp.find(x => x.id === id);
-  if (!e || !isDep(e)) return toast("Seules les dépenses peuvent devenir des courses.");
-  const already = S.shop.find(x => x.sourceExpenseId === id);
-  if (already) return toast("Cette dépense a déjà été convertie.");
-  const item = {
-    id: uid(), nom: e.libelle || (CATS[e.categorie] || CATS.AUTRE)[0],
-    qte: "", prix: +e.montant || 0, freq: 0, lastBought: "", prevBought: "",
-    expId: "", compte: e.compte || "", datePrevue: e.date || today(),
-    priorite: "NORMALE", sourceExpenseId: id, creeLe: today()
-  };
-  S.shop.push(item);
-  S.exp.splice(S.exp.indexOf(e), 1);
-  closeSheet();
-  render();
-  sync("saveShop", item);
-  sync("setDeleted", "exp", id, true);
-  toast("Dépense déplacée dans Courses");
-}
-
 // === COURSES ===
 
 function sNext(i) {
   const f = +i.freq;
-  return !i.lastBought ? (i.datePrevue || today()) : f > 0 ? addDays(i.lastBought, f) : null;
+  return !i.lastBought ? today() : f > 0 ? addDays(i.lastBought, f) : null;
 }
 const mdot = (v) => dot(v) + "\xA0" + S.set.devise;
 const LOC = () => S.set.lang === "en" ? "en-US" : "fr-FR";
@@ -3262,18 +3110,18 @@ function shopCal() {
     days = Array.from({ length: 7 }, (_, k) => addDays(mon, k));
   }
   const { pl, bo } = shopMap(days[0], days[days.length - 1]), cell = (ds) => {
-    const p = pl[ds] || 0, b = bo[ds] || 0, c = p + b, k = !c ? "e" : !p ? "d" : ds < T ? "l" : "p", z = c ? Math.min(16 + c * 3, 27) : 14, urgent = S.shop.some(i => sNext(i) === ds && i.priorite === "HAUTE");
-    return `<span class="dw"><i class="dd ${k}${ds === T ? " tdy" : ""}${urgent ? " urg" : ""}" style="--z:${z}px"></i></span>`;
+    const p = pl[ds] || 0, b = bo[ds] || 0, c = p + b, k = !c ? "e" : !p ? "d" : ds < T ? "l" : "p", z = c ? Math.min(16 + c * 3, 27) : 14;
+    return `<span class="dw"><i class="dd ${k}${ds === T ? " tdy" : ""}" style="--z:${z}px"></i></span>`;
   };
   return `<div class="cal2">${"<span></span>".repeat(lead)}${days.map(cell).join("")}</div><div class="cal2 wl">${ord.map((l) => `<span>${l}</span>`).join("")}</div><div class="cdv"></div><button class="cmore" data-a="sc">${S.sc ? "Afficher cette semaine" : "Afficher tout le mois"}${CHEVR}</button>`;
 }
 
 function shopTab() {
-  const T = today(), all = S.shop.map((i) => ({ i, n: sNext(i) })), due2 = all.filter((x) => x.n && x.n <= T && x.i.lastBought !== T).sort((a, b) => (PR[b.i.priorite] || 2) - (PR[a.i.priorite] || 2) || a.n.localeCompare(b.n)), chk = all.filter((x) => x.i.lastBought === T), later = all.filter((x) => x.i.lastBought !== T && !(x.n && x.n <= T)).sort((a, b) => (PR[b.i.priorite] || 2) - (PR[a.i.priorite] || 2) || (a.n || "9").localeCompare(b.n || "9"));
-  const est = sum(due2, (x) => +x.i.prix || 0), sub = (i) => [i.qte, FREQ[+i.freq], i.datePrevue ? fdate(i.datePrevue) : ""].filter(Boolean).map(esc).join(" \xB7 "), pr = (i) => i.prix ? `<b class="cp">${dot(i.prix)}</b>` : "";
+  const T = today(), all = S.shop.map((i) => ({ i, n: sNext(i) })), due2 = all.filter((x) => x.n && x.n <= T && x.i.lastBought !== T).sort((a, b) => a.n.localeCompare(b.n)), chk = all.filter((x) => x.i.lastBought === T), later = all.filter((x) => x.i.lastBought !== T && !(x.n && x.n <= T)).sort((a, b) => (a.n || "9").localeCompare(b.n || "9"));
+  const est = sum(due2, (x) => +x.i.prix || 0), sub = (i) => [i.qte, FREQ[+i.freq]].filter(Boolean).map(esc).join(" \xB7 "), pr = (i) => i.prix ? `<b class="cp">${dot(i.prix)}</b>` : "";
   const row = (x, on, act, extra) => {
     const i = x.i;
-    return `<div class="cr"><button class="rk ${on ? "on" : ""}" data-a="${act}" data-id="${i.id}" aria-label="${on ? "D\xE9cocher" : "Cocher"}"></button><button class="grow" data-a="shop" data-id="${i.id}" style="text-align:left"><b>${esc(i.nom)}${i.priorite === "HAUTE" ? '<span class="shop-priority high">URGENT</span>' : i.priorite === "BASSE" ? '<span class="shop-priority low">BASSE</span>' : ""}</b><small>${extra}</small></button>${pr(i)}</div>`;
+    return `<div class="cr"><button class="rk ${on ? "on" : ""}" data-a="${act}" data-id="${i.id}" aria-label="${on ? "D\xE9cocher" : "Cocher"}"></button><button class="grow" data-a="shop" data-id="${i.id}" style="text-align:left"><b>${esc(i.nom)}</b><small>${extra}</small></button>${pr(i)}</div>`;
   };
   return `<div class="pcard"><div class="pbig">${dot(est)}<em>${esc(S.set.devise)}</em></div><div class="psub">${due2.length} article${due2.length > 1 ? "s" : ""} \xE0 acheter. Un article coch\xE9 est ajout\xE9 \xE0 tes d\xE9penses.</div>${shopCal()}</div>` + (due2.length ? `<div class="sx"><span>\xC0 acheter</span><span>${mdot(est)}</span></div>` + due2.map((x) => {
     const dl = dbt(x.n, T);
@@ -3285,29 +3133,19 @@ function shopTab() {
 }
 
 function shopForm(id) {
-  const e = id ? S.shop.find((x) => x.id === id) : null;
-  const i = e || { nom: "", qte: "", prix: "", freq: 0, datePrevue: today(), priorite: "NORMALE", compte: defAcc() };
-  sheet(`<h3 class="st">${e ? "Modifier l’article" : "Nouvel article"}</h3><p class="ss">Planifie la date d’achat et signale ce qui est urgent.</p>
-  <div class="box">
-    <div class="kv"><span>Article</span><input id="h_n" placeholder="Ex. Riz" value="${esc(i.nom)}"></div>
-    <div class="kv"><span>Quantité</span><input id="h_q" placeholder="Ex. 5 kg" value="${esc(i.qte)}"></div>
-    <div class="kv"><span>Prix estimé</span><input id="h_p" type="number" inputmode="decimal" placeholder="0" value="${i.prix || ""}"></div>
-    <div class="kv"><span>Date prévue</span><input id="h_date" type="date" value="${i.datePrevue || today()}"></div>
-    <div class="kv"><span>Priorité</span><select id="h_priority">${Object.entries({HAUTE:"Urgente",NORMALE:"Normale",BASSE:"Basse"}).map(([k,v]) => `<option value="${k}" ${(i.priorite || "NORMALE") === k ? "selected" : ""}>${v}</option>`).join("")}</select></div>
-    ${S.acc.length ? `<div class="kv"><span>Compte</span><select id="h_c">${S.acc.map((a) => `<option value="${a.id}" ${a.id === (acOf(i.compte) ? i.compte : defAcc()) ? "selected" : ""}>${esc(a.nom)}</option>`).join("")}</select></div>` : ""}
-    <div class="kv"><span>Fréquence</span><select id="h_f">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${+k === +i.freq ? "selected" : ""}>${v}</option>`).join("")}</select></div>
-  </div>
+  const e = id ? S.shop.find((x) => x.id === id) : null, i = e || { nom: "", qte: "", prix: "", freq: 7 };
+  sheet(`<h3 class="st">${e ? "Modifier l\u2019article" : "Nouvel article"}</h3><p class="ss">Il revient automatiquement dans ta liste selon la fr\xE9quence choisie.</p>
+  <div class="box"><div class="kv"><span>Article</span><input id="h_n" placeholder="Ex. Riz" value="${esc(i.nom)}"></div><div class="kv"><span>Quantit\xE9</span><input id="h_q" placeholder="Ex. 5 kg" value="${esc(i.qte)}"></div><div class="kv"><span>Prix estim\xE9</span><input id="h_p" type="number" inputmode="decimal" placeholder="0" value="${i.prix || ""}"></div>${S.acc.length ? `<div class="kv"><span>Compte</span><select id="h_c">${S.acc.map((a) => `<option value="${a.id}" ${a.id === (acOf(i.compte) ? i.compte : defAcc()) ? "selected" : ""}>${esc(a.nom)}</option>`).join("")}</select></div>` : ""}<div class="kv"><span>Fr\xE9quence</span><select id="h_f">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${+k === +i.freq ? "selected" : ""}>${v}</option>`).join("")}</select></div></div>
   <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e ? `<button class="lk" data-a="delShop" data-id="${id}">Supprimer</button>` : ""}`);
   $("#ok").onclick = () => {
-    const n = $("#h_n").value.trim(), date = $("#h_date").value;
-    if (!n || !date) return toast("Article et date requis");
-    const o = { ...e || { lastBought: "", prevBought: "", expId: "" }, id: e ? e.id : uid(),
-      nom: n, qte: $("#h_q").value.trim(), prix: parseFloat($("#h_p").value) || 0,
-      freq: +$("#h_f").value, compte: $("#h_c") ? $("#h_c").value : e && e.compte || "",
-      datePrevue: date, priorite: $("#h_priority").value, creeLe: e ? e.creeLe : today() };
+    const n = $("#h_n").value.trim();
+    if (!n) return toast("Nom requis");
+    const o = { ...e || { lastBought: "", prevBought: "", expId: "" }, id: e ? e.id : uid(), nom: n, qte: $("#h_q").value.trim(), prix: parseFloat($("#h_p").value) || 0, freq: +$("#h_f").value, compte: $("#h_c") ? $("#h_c").value : e && e.compte || "", creeLe: e ? e.creeLe : today() };
     const k = S.shop.findIndex((x) => x.id === o.id);
     k < 0 ? S.shop.push(o) : S.shop[k] = o;
-    closeSheet(); render(); sync("saveShop", o);
+    closeSheet();
+    render();
+    sync("saveShop", o);
   };
 }
 
@@ -3329,19 +3167,15 @@ function priceSheet(id) {
 function buy(id, paid) {
   const i = S.shop.find((x) => x.id === id), price = paid === void 0 ? +i.prix || 0 : paid;
   if (!(price > 0) && paid === void 0) return priceSheet(id);
+  i.prevBought = i.lastBought || "";
+  i.lastBought = today();
   let ex = null;
   if (price > 0) {
-    const accountId = acOf(i.compte) ? i.compte : defAcc();
-    const check = accountCanSpend(accountId, price);
-    if (!check.ok) return toast("Solde insuffisant sur le compte sélectionné.");
-    ex = { id: uid(), type: "DEP", libelle: i.nom, montant: price, categorie: "ALIM", compte: accountId, date: today(), moyen: S.set.moyen || "ESPECES", note: "Course" + (i.qte ? " \xB7 " + i.qte : ""), creeLe: (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", " ") };
+    ex = { id: uid(), type: "DEP", libelle: i.nom, montant: price, categorie: "ALIM", compte: acOf(i.compte) ? i.compte : defAcc(), date: today(), moyen: S.set.moyen || "ESPECES", note: "Course" + (i.qte ? " \xB7 " + i.qte : ""), creeLe: (/* @__PURE__ */ new Date()).toISOString().slice(0, 16).replace("T", " ") };
     S.exp.push(ex);
     i.expId = ex.id;
     sync("saveExpense", ex);
   } else i.expId = "";
-  i.prevBought = i.lastBought || "";
-  i.lastBought = today();
-  i.datePrevue = "";
   render();
   sync("saveShop", i);
   toast(ex ? "Achet\xE9 \xB7 ajout\xE9 aux d\xE9penses" : "Achet\xE9 \u2713", () => unbuy(id, 1));
@@ -3410,7 +3244,7 @@ function detail(id) {
   const i = itemOf(id), s = st(i), u = due(i), e = endEst(i), w = W(i), h = sorted().filter((t) => t.itemId === id).slice(0, 4);
   sheet(`<div style="text-align:center">${av(i, 64)}</div><h3 class="st" style="margin-top:10px">${esc(i.nom)}</h3><p class="ss">${isC(i) ? "On me doit" : "Je dois"} \xB7 ${esc(i.contact || "\u2014")} \xB7 ${i.mensualite > 0 ? money(i.mensualite) + " le " + i.jourEcheance + " du mois" : "Paiement libre"}</p>
   <div class="mid">${big(s.solde ? 0 : s.reste)}<div class="cap2">${s.solde ? "Sold\xE9e" : (isC(i) ? "attendu" : "restant") + " \xB7 " + Math.round(s.p) + "% " + w.done}</div><div class="bar"><i style="width:${s.p}%"></i></div></div>
-  <div class="box"><div class="kv"><span>${w.init}</span><b>${money(i.montant)}</b></div><div class="kv"><span>${w.paid}</span><b>${money(s.done)}</b></div><div class="kv"><span>Priorit\xE9</span><b>${PRL[i.priorite] || "Normale"}</b></div>${i.loanAccountId && acOf(i.loanAccountId) ? `<div class="kv"><span>Emprunt li\xE9 au compte</span><b>${esc(acOf(i.loanAccountId).nom)}</b></div>` : ""}</div>
+  <div class="box"><div class="kv"><span>${w.init}</span><b>${money(i.montant)}</b></div><div class="kv"><span>${w.paid}</span><b>${money(s.done)}</b></div><div class="kv"><span>Priorit\xE9</span><b>${PRL[i.priorite] || "Normale"}</b></div></div>
   ${u || e || i.notes ? `<div class="box soft">${u ? `<div class="kv"><span>Prochaine \xE9ch\xE9ance</span><b>${dueTxt(u)}<br><small>${fdate(u.ds)} \xB7 ${money(u.amount)}</small></b></div>` : ""}${e ? `<div class="kv"><span>${i.mensualite > 0 ? "Fin estim\xE9e" : "Date limite"}</span><b>${e}</b></div>` : ""}${i.notes ? `<div class="kv"><span>Notes</span><b>${esc(i.notes)}</b></div>` : ""}</div>` : ""}
   ${h.length ? `<div class="hl">Derniers paiements</div>` + h.map((t) => `<button class="mr" data-a="tx" data-id="${t.id}"><span>${fdate(t.date)}${t.moyen ? " \xB7 " + ml(t.moyen) : ""}${t.note ? " \xB7 " + esc(t.note) : ""}</span><b>${money(t.montant)}</b></button>`).join("") : ""}
   ${s.solde ? `<div class="three"><button class="pb" data-a="edit" data-id="${id}">Modifier</button><button class="pb" data-a="reopen" data-id="${id}">R\xE9tablir</button><button class="pb rd" data-a="del" data-id="${id}">Supprimer</button></div>` : `<div class="two"><button class="pb" data-a="edit" data-id="${id}">Modifier</button><button class="pp" data-a="pay" data-id="${id}" data-amt="${u ? u.amount : ""}">${w.pay}</button></div><button class="lk" data-a="del" data-id="${id}">Supprimer</button>`}`);
@@ -3453,12 +3287,6 @@ function payForm(id, amt2, tx, pre) {
     const m = parseFloat($("#f_m").value), d = $("#f_d").value;
     if (!(m > 0) || !d) return toast("Montant et date requis");
     P = { ...P, montant: m, date: d, note: $("#f_n").value.trim() };
-    if (!isC(i) && P.compte) {
-      const oldTx = S.tx.find(x => x.id === P.id);
-      const addBack = oldTx && oldTx.compte === P.compte ? (+oldTx.montant || 0) : 0;
-      const check = accountCanSpend(P.compte, m, addBack);
-      if (!check.ok) return toast("Solde insuffisant sur ce compte. Vérifie le compte ou le crédit lié.");
-    }
     confirmPay();
   };
 }
@@ -3528,7 +3356,7 @@ function debtForm(id, sens) {
   <div class="box"><div class="kv"><span>Nom</span><input id="f_nom" placeholder="Ex. Pr\xEAt Jenny" value="${esc(i.nom)}"></div><div class="kv"><span id="l_c"></span><input id="f_c" placeholder="Optionnel" value="${esc(i.contact)}"></div><div class="kv"><span id="l_m"></span><input id="f_m" type="number" inputmode="decimal" placeholder="0" value="${i.montant}"></div>${e ? "" : '<div class="kv"><span id="l_pd"></span><input id="f_pd" type="number" inputmode="decimal" placeholder="0"></div>'}</div>
   <div class="seg"><button data-p="L" class="${PLAN === "L" ? "on" : ""}">Paiement libre</button><button data-p="M" class="${PLAN === "M" ? "on" : ""}">Mensualit\xE9s</button></div>
   <div id="pl">${planHtml(i)}</div><div class="cap2" id="hint" style="text-align:center"></div>
-  <div class="hl" style="text-align:center">Priorit\xE9</div><div class="seg">${[["HAUTE", "Haute"], ["NORMALE", "Normale"], ["BASSE", "Basse"]].map(([k, l]) => `<button data-pr="${k}" class="${PRI === k ? "on" : ""}">${l}</button>`).join("")}</div>${SENS === "DETTE" ? `<div class="box"><div class="kv"><span>Emprunt provenant du compte</span><select id="f_loan"><option value="">Aucun emprunt lié</option>${S.acc.map(a => `<option value="${a.id}" ${i.loanAccountId === a.id ? "selected" : ""}>${esc(a.nom)}</option>`).join("")}</select></div></div><p class="cap2">À renseigner uniquement si cette dette correspond à un crédit ou découvert accordé sur ce compte.</p>` : ""}
+  <div class="hl" style="text-align:center">Priorit\xE9</div><div class="seg">${[["HAUTE", "Haute"], ["NORMALE", "Normale"], ["BASSE", "Basse"]].map(([k, l]) => `<button data-pr="${k}" class="${PRI === k ? "on" : ""}">${l}</button>`).join("")}</div>
   <div class="box"><div class="kv"><span>Notes</span><input id="f_notes" placeholder="Optionnel" value="${esc(i.notes)}"></div></div>
   <div class="two"><button class="pb" data-a="${e ? "debt" : "close"}" data-id="${id || ""}">Annuler</button><button class="pp" id="ok" ${e ? 'data-e="1"' : ""}>${e ? "Enregistrer" : "Cr\xE9er"}</button></div>`);
   applySens();
@@ -3538,7 +3366,7 @@ function debtForm(id, sens) {
     if (!n || !(m > 0)) return toast("Nom et montant requis");
     if (M && (!(mens > 0) || jour < 1 || jour > 31)) return toast("Mensualit\xE9 et jour (1 \xE0 31) requis");
     if (pd >= m) return toast("Le montant d\xE9j\xE0 r\xE9gl\xE9 doit \xEAtre inf\xE9rieur au total");
-    const o = { ...e || {}, id: e ? e.id : uid(), type: SENS, avatar: AV, priorite: PRI, nom: n, contact: $("#f_c").value.trim(), montant: m, mensualite: mens, jourEcheance: jour, echeance: M ? "" : $("#f_lim").value, notes: $("#f_notes").value.trim(), loanAccountId: SENS === "DETTE" && $("#f_loan") ? $("#f_loan").value : "", creeLe: e ? e.creeLe : today() };
+    const o = { ...e || {}, id: e ? e.id : uid(), type: SENS, avatar: AV, priorite: PRI, nom: n, contact: $("#f_c").value.trim(), montant: m, mensualite: mens, jourEcheance: jour, echeance: M ? "" : $("#f_lim").value, notes: $("#f_notes").value.trim(), creeLe: e ? e.creeLe : today() };
     const k = S.items.findIndex((x) => x.id === o.id);
     k < 0 ? S.items.push(o) : S.items[k] = o;
     sync("saveItem", o);
@@ -3746,8 +3574,6 @@ document.addEventListener("click", (e) => {
     S.as = id;
     accSheet();
   } else if (a === "dadv") debtSay(1);
-  else if (a === "zbb") zbbLaunch();
-  else if (a === "toShop") expenseToShop(id);
   else if (a === "plus") plusMenu();
   else if (a === "pm") {
     ({ debt: () => debtForm(null, S.sens), exp: () => expForm(), shop: () => shopForm() })[D.t]();
@@ -3843,7 +3669,7 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catc
 });
 
 // ===== Traduction (Réglages > Langue) =====
-const EN = { "Tu dois": "You owe", "On te doit": "You are owed", "Sold\xE9": "Settled", "Semaine": "Week", "Mois": "Month", "Pr\xE9c\xE9dent": "Previous", "Suivant": "Next", "COMPTES": "ACCOUNTS", "Activit\xE9s li\xE9es au compte": "Account activity", "Total d\xE9pens\xE9 cette semaine": "Total spent this week", "Total d\xE9pens\xE9 ce mois": "Total spent this month", "Affecter les anciennes op\xE9rations": "Assign older transactions", "\xC0 r\xE9clamer": "To claim", "Rien sur cette p\xE9riode.": "Nothing for this period.", "de d\xE9penses effectu\xE9es cette semaine.": "spent this week.", "de revenus re\xE7us cette semaine.": "of income received this week.", "mis de c\xF4t\xE9 cette semaine.": "saved this week.", "Position nette": "Net position", "Courses termin\xE9es": "Completed shopping", "\xC0 payer": "To pay", "\xC0 recevoir": "To receive", "Nouvelle dette": "New debt", "Nouvelle cr\xE9ance": "New receivable", "Renseigne l\u2019essentiel, puis suis-la par remboursements.": "Fill in the essentials, then track it with repayments.", "Quelqu\u2019un te doit de l\u2019argent : suis ses paiements.": "Someone owes you money: track their payments.", "Mensualit\xE9s": "Monthly instalments", "Mensualit\xE9": "Monthly payment", "Paiement libre, sans \xE9ch\xE9ance fixe.": "Free payment, no fixed due date.", "Cr\xE9er": "Create", "Ex. Pr\xEAt Jenny": "e.g. Jenny loan", "Modifier la dette": "Edit debt", "Modifier la cr\xE9ance": "Edit receivable", "1 \xE0 31": "1 to 31", "Prochaine \xE9ch\xE9ance": "Next due date", "Fin estim\xE9e": "Estimated end", "Moyen de paiement": "Payment method", "Pay\xE9 depuis le compte": "Paid from account", "Re\xE7u sur le compte": "Received into account", "Vers\xE9 sur le compte": "Paid into account", "Derniers paiements": "Latest payments", "D\xE9j\xE0 r\xE9gl\xE9 avant l\u2019app": "Already paid before the app", "En cours": "In progress", "Enregistr\xE9": "Saved", "Indique la mensualit\xE9 pour estimer la fin.": "Enter the monthly payment to estimate the end.", "Jour du mois": "Day of the month", "Date limite": "Deadline", "Continuer": "Continue", "Le montant d\xE9j\xE0 r\xE9gl\xE9 doit \xEAtre inf\xE9rieur au total": "The amount already paid must be lower than the total", "Mensualit\xE9 et jour (1 \xE0 31) requis": "Monthly payment and day (1 to 31) required", "Nom et montant requis": "Name and amount required", "Reste apr\xE8s": "Remaining after", "Reste avant": "Remaining before", "R\xE9tabli": "Restored", "R\xE9tablir": "Restore", "R\xE9tablir ? Le dernier paiement sera annul\xE9 et l\u2019\xE9l\xE9ment redeviendra en cours.": "Restore? The last payment will be cancelled and the item will be in progress again.", "Sold\xE9e \u{1F389}": "Settled \u{1F389}", "Statut": "Status", "Supprim\xE9": "Deleted", "V\xE9rifie les d\xE9tails avant d\u2019enregistrer.": "Check the details before saving.", "Notes": "Notes", "Priorit\xE9": "Priority", "Masquer les montants": "Hide amounts", "Afficher les montants": "Show amounts", "D\xE9cocher": "Uncheck", "Cocher": "Check", "Total rembours\xE9": "Total repaid", "Dettes sold\xE9es": "Settled debts", "Total re\xE7u": "Total received", "Cr\xE9ances en retard": "Overdue receivables", "Cr\xE9ances sold\xE9es": "Settled receivables", "\u{1F4D2} Op\xE9rations": "\u{1F4D2} Transactions", "\u{1F4B8} Rembours\xE9 ce mois": "\u{1F4B8} Repaid this month", "Saisir une nouvelle source": "Enter a new source", "Saisir une nouvelle destination": "Enter a new destination", "sera ajout\xE9 \xE0 tes d\xE9penses": "will be added to your expenses", "Dans les d\xE9penses": "In expenses", "Voir tout": "See all", "Annuler": "Cancel", "en retard": "overdue", "Achat annul\xE9": "Purchase undone", "Achet\xE9 \xB7 ajout\xE9 aux d\xE9penses": "Bought \xB7 added to expenses", "Achet\xE9 \u2713": "Bought \u2713", "Affecter": "Assign", "Affecter \xE0 un compte": "Assign to an account", "Afficher tout le mois": "Show whole month", "Afficher cette semaine": "Show this week", "Ajouter": "Add", "+ Ajouter": "+ Add", "+ Ajouter un compte": "+ Add an account", "+ Ajouter une course": "+ Add a shopping item", "Apparence": "Appearance", "Appuie sur + pour ajouter une op\xE9ration.": "Tap + to add a transaction.", "Appuie sur + pour en ajouter une.": "Tap + to add one.", "Article": "Item", "Astuce : cr\xE9e un compte dans Budget pour suivre ton solde.": "Tip: create an account in Budget to track your balance.", "Aucun revenu not\xE9 ce mois-ci": "No income recorded this month", "Aucune dette en cours. Continue comme \xE7a !": "No debts right now. Keep it up!", "Aucune d\xE9pense not\xE9e ce mois-ci": "No expenses recorded this month", "Aucune op\xE9ration pour l\u2019instant.": "No transactions yet.", "Aujourd\u2019hui": "Today", "Hier": "Yesterday", "Autre": "Other", "Basse": "Low", "Bilan & d\xE9cisions": "Summary & decisions", "Budget mensuel": "Monthly budget", "CETTE SEMAINE": "THIS WEEK", "Ce que je dois": "What I owe", "Ce que je dois ou ce qu\u2019on me doit": "What I owe or am owed", "Ce qu\u2019on me doit": "What I am owed", "Ce qu\u2019on te doit couvre exactement tes dettes.": "What you are owed exactly covers your debts.", "Changer la connexion au Google Sheet ?": "Change the Google Sheet connection?", "Chaque d\xE9pense, revenu ou \xE9pargne est rattach\xE9 \xE0 un compte.": "Every expense, income or saving is linked to an account.", "Chaque mois": "Every month", "Chaque semaine": "Every week", "Ch\xE8que": "Cheque", "Cocher sans enregistrer de d\xE9pense": "Check without recording an expense", "Compte": "Account", "Compte par d\xE9faut": "Default account", "Compte supprim\xE9": "Account deleted", "Compte \xE9pargne": "Savings account", "Comptes": "Accounts", "Date prévue": "Planned date", "Urgente": "Urgent", "Normale": "Normal", "Priorité": "Priority", "Emprunt provenant du compte": "Loan linked to account", "Aucun emprunt lié": "No linked loan", "Solde actuel": "Current balance", "Dépenses cumulées": "Total expenses", "Transformer en course": "Move to shopping list", "Plan d’allocation · ZBB": "Zero-based allocation plan", "Recalculer la répartition": "Recalculate allocation", "Valider le plan": "Save plan", "Connecter": "Connect", "Connexion": "Connection", "Connexion \xE0 ton Google Sheet": "Connect to your Google Sheet", "Connexion\u2026 (jusqu\u2019\xE0 30 s)": "Connecting\u2026 (up to 30 s)", "Conseil suivant": "Next tip", "Conseiller": "Advisor", "Cr\xE9ance": "Receivable", "Cr\xE9ances": "Receivables", "Cr\xE9ancier": "Creditor", "Date limite d\xE9pass\xE9e": "Deadline passed", "Destination de l\u2019\xE9pargne": "Savings destination", "Dette ou cr\xE9ance": "Debt or receivable", "Dettes \xB7 Cr\xE9ances": "Debts \xB7 Receivables", "Devise": "Currency", "D\xE9biteur": "Debtor", "D\xE9j\xE0 rembours\xE9": "Already repaid", "D\xE9j\xE0 re\xE7u": "Already received", "D\xE9lai d\xE9pass\xE9": "Time exceeded", "D\xE9pense": "Expense", "D\xE9pense, revenu ou \xE9pargne": "Expense, income or saving", "D\xE9penses": "Expenses", "En retard": "Overdue", "Enregistrer": "Save", "Esp\xE8ces": "Cash", "Esp\xE8ces, banque, mobile money\u2026": "Cash, bank, mobile money\u2026", "Ex. 5 kg": "e.g. 5 kg", "Ex. Compte courant": "e.g. Checking account", "Ex. Riz": "e.g. Rice", "Fr\xE9quence": "Frequency", "Habitudes": "Habits", "Hors ligne : donn\xE9es en cache": "Offline: cached data", "Il revient automatiquement dans ta liste selon la fr\xE9quence choisie.": "It returns to your list automatically, based on the chosen frequency.", "Indique le montant": "Enter the amount", "Je dois": "I owe", "Jeton": "Token", "Langue": "Language", "Libell\xE9": "Label", "Mobile money": "Mobile money", "Modifier": "Edit", "Modifier la d\xE9pense": "Edit expense", "Modifier le compte": "Edit account", "Modifier le revenu": "Edit income", "Modifier l\u2019article": "Edit item", "Modifier l\u2019\xE9pargne": "Edit saving", "Mois pr\xE9c\xE9dent": "Previous month", "Mois suivant": "Next month", "Montant d\xFB": "Amount owed", "Montant et date requis": "Amount and date required", "Montant initial": "Initial amount", "Montant pr\xEAt\xE9": "Amount lent", "Moyen": "Method", "Moyen de paiement par d\xE9faut": "Default payment method", "Nom": "Name", "Nom requis": "Name required", "Nouveau compte": "New account", "Nouveau revenu": "New income", "Nouvel article": "New item", "Nouvelle d\xE9pense": "New expense", "Nouvelle \xE9pargne": "New saving", "On me doit": "I am owed", "On te doit :": "You are owed:", "Optionnel": "Optional", "Op\xE9rations affect\xE9es": "Transactions assigned", "Op\xE9rations enregistr\xE9es": "Recorded transactions", "Paiement libre": "Free payment", "Plus tard": "Later", "Position nette": "Net position", "Priorit\xE9 haute": "High priority", "Prix estim\xE9": "Estimated price", "Prix pay\xE9": "Price paid", "Profil": "Profile", "Pr\xE9nom": "First name", "Quantit\xE9": "Quantity", "Que veux-tu enregistrer ?": "What do you want to record?", "REMBOURSEMENT GLOBAL": "OVERALL REPAYMENT", "Records": "Records", "Retour": "Back", "Rien ce mois-ci.": "Nothing this month.", "Rien \xE0 acheter pour l\u2019instant.": "Nothing to buy for now.", "R\xE9essayer": "Retry", "R\xE9glages": "Settings", "Saisis le jeton": "Enter the token", "Sant\xE9": "Health", "Signaler une \xE9ch\xE9ance": "Flag a due date", "Solde de d\xE9part": "Starting balance", "Solde restant": "Remaining balance", "Sold\xE9e": "Settled", "Source du revenu": "Income source", "Supprimer": "Delete", "Supprimer ce compte ? Ses op\xE9rations resteront dans \xAB Non affect\xE9 \xBB.": "Delete this account? Its transactions will stay under \u201CUnassigned\u201D.", "Supprimer cet article ?": "Delete this item?", "Supprimer cette d\xE9pense ?": "Delete this expense?", "Supprimer d\xE9finitivement de la liste ?": "Delete permanently from the list?", "Supprimer le compte": "Delete account", "Ta liste de courses est vide pour aujourd\u2019hui": "Your shopping list is empty for today", "Termin\xE9": "Done", "Tous les 2 mois": "Every 2 months", "Toutes les 2 semaines": "Every 2 weeks", "Toutes les op\xE9rations \xAB Non affect\xE9 \xBB seront rattach\xE9es au compte choisi.": "All \u201CUnassigned\u201D transactions will be linked to the chosen account.", "Un article de ta liste p\xE9riodique": "An item from your recurring list", "Un mouvement sur l\u2019un de tes comptes": "A movement on one of your accounts", "Une seule fois": "Once", "Valider": "Confirm", "Voir plus": "See more", "\xC0 acheter": "To buy", "\xC0 jour": "Up to date", "\xC0 payer en priorit\xE9": "Pay first", "\xC0 propos": "About", "\xC0 r\xE9clamer en priorit\xE9": "Claim first", "\xC0 surveiller": "To watch", "\xC0 venir": "Upcoming", "\xC9CH\xC9ANCES DU MOIS": "DUE THIS MONTH", "\xC9chec de l\u2019enregistrement : ": "Save failed: ", "\xC9pargne": "Savings", "Revenus": "Income", "Revenu": "Income", "Tout": "All", "Dettes": "Debts", "Dette": "Debt", "Courses": "Shopping", "Liste": "List", "Bilan": "Summary", "Clair": "Light", "Sombre": "Dark", "Salaire": "Salary", "Cadeau": "Gift", "Remboursement": "Repayment", "Investissement": "Investment", "Alimentation": "Food", "Logement": "Housing", "Loisirs": "Leisure", "Factures": "Bills", "Virement": "Transfer", "Carte": "Card", "Encaisser": "Collect", "Rembourser": "Repay", "encaissement": "collection", "remboursement": "repayment", "re\xE7u": "received", "rembours\xE9": "repaid", "Note": "Note", "Marquer": "Mark", "Nom du compte": "Account name", "Type": "Type", "Couleur": "Color", "Solde": "Balance", "Solde fin de mois": "End-of-month balance", "Non affect\xE9": "Unassigned", "Banque": "Bank", "\xC9pargne": "Savings", "Mobile Money": "Mobile money", "Compte courant": "Checking account", "Priorit\xE9": "Priority", "Normale": "Normal", "Haute": "High", "Contact": "Contact", "Notes": "Notes", "\xC9ch\xE9ance": "Due date", "Mensualit\xE9": "Monthly payment", "Jour du mois": "Day of month", "Montant": "Amount", "Paiement": "Payment", "Encaissement": "Collection", "Confirmer": "Confirm", "Fermer": "Close", "Aucune": "None", "Aucun": "None", "Fait": "Done", "Jours": "Days", "jours": "days", "Mois": "Months", "Progression": "Progress", "Op\xE9rations": "Transactions", "Rembours\xE9 ce mois": "Repaid this month", "Re\xE7u ce mois": "Received this month" };
+const EN = { "Tu dois": "You owe", "On te doit": "You are owed", "Sold\xE9": "Settled", "Semaine": "Week", "Mois": "Month", "Pr\xE9c\xE9dent": "Previous", "Suivant": "Next", "COMPTES": "ACCOUNTS", "Activit\xE9s li\xE9es au compte": "Account activity", "Total d\xE9pens\xE9 cette semaine": "Total spent this week", "Total d\xE9pens\xE9 ce mois": "Total spent this month", "Affecter les anciennes op\xE9rations": "Assign older transactions", "\xC0 r\xE9clamer": "To claim", "Rien sur cette p\xE9riode.": "Nothing for this period.", "de d\xE9penses effectu\xE9es cette semaine.": "spent this week.", "de revenus re\xE7us cette semaine.": "of income received this week.", "mis de c\xF4t\xE9 cette semaine.": "saved this week.", "Position nette": "Net position", "Courses termin\xE9es": "Completed shopping", "\xC0 payer": "To pay", "\xC0 recevoir": "To receive", "Nouvelle dette": "New debt", "Nouvelle cr\xE9ance": "New receivable", "Renseigne l\u2019essentiel, puis suis-la par remboursements.": "Fill in the essentials, then track it with repayments.", "Quelqu\u2019un te doit de l\u2019argent : suis ses paiements.": "Someone owes you money: track their payments.", "Mensualit\xE9s": "Monthly instalments", "Mensualit\xE9": "Monthly payment", "Paiement libre, sans \xE9ch\xE9ance fixe.": "Free payment, no fixed due date.", "Cr\xE9er": "Create", "Ex. Pr\xEAt Jenny": "e.g. Jenny loan", "Modifier la dette": "Edit debt", "Modifier la cr\xE9ance": "Edit receivable", "1 \xE0 31": "1 to 31", "Prochaine \xE9ch\xE9ance": "Next due date", "Fin estim\xE9e": "Estimated end", "Moyen de paiement": "Payment method", "Pay\xE9 depuis le compte": "Paid from account", "Re\xE7u sur le compte": "Received into account", "Vers\xE9 sur le compte": "Paid into account", "Derniers paiements": "Latest payments", "D\xE9j\xE0 r\xE9gl\xE9 avant l\u2019app": "Already paid before the app", "En cours": "In progress", "Enregistr\xE9": "Saved", "Indique la mensualit\xE9 pour estimer la fin.": "Enter the monthly payment to estimate the end.", "Jour du mois": "Day of the month", "Date limite": "Deadline", "Continuer": "Continue", "Le montant d\xE9j\xE0 r\xE9gl\xE9 doit \xEAtre inf\xE9rieur au total": "The amount already paid must be lower than the total", "Mensualit\xE9 et jour (1 \xE0 31) requis": "Monthly payment and day (1 to 31) required", "Nom et montant requis": "Name and amount required", "Reste apr\xE8s": "Remaining after", "Reste avant": "Remaining before", "R\xE9tabli": "Restored", "R\xE9tablir": "Restore", "R\xE9tablir ? Le dernier paiement sera annul\xE9 et l\u2019\xE9l\xE9ment redeviendra en cours.": "Restore? The last payment will be cancelled and the item will be in progress again.", "Sold\xE9e \u{1F389}": "Settled \u{1F389}", "Statut": "Status", "Supprim\xE9": "Deleted", "V\xE9rifie les d\xE9tails avant d\u2019enregistrer.": "Check the details before saving.", "Notes": "Notes", "Priorit\xE9": "Priority", "Masquer les montants": "Hide amounts", "Afficher les montants": "Show amounts", "D\xE9cocher": "Uncheck", "Cocher": "Check", "Total rembours\xE9": "Total repaid", "Dettes sold\xE9es": "Settled debts", "Total re\xE7u": "Total received", "Cr\xE9ances en retard": "Overdue receivables", "Cr\xE9ances sold\xE9es": "Settled receivables", "\u{1F4D2} Op\xE9rations": "\u{1F4D2} Transactions", "\u{1F4B8} Rembours\xE9 ce mois": "\u{1F4B8} Repaid this month", "Saisir une nouvelle source": "Enter a new source", "Saisir une nouvelle destination": "Enter a new destination", "sera ajout\xE9 \xE0 tes d\xE9penses": "will be added to your expenses", "Dans les d\xE9penses": "In expenses", "Voir tout": "See all", "Annuler": "Cancel", "en retard": "overdue", "Achat annul\xE9": "Purchase undone", "Achet\xE9 \xB7 ajout\xE9 aux d\xE9penses": "Bought \xB7 added to expenses", "Achet\xE9 \u2713": "Bought \u2713", "Affecter": "Assign", "Affecter \xE0 un compte": "Assign to an account", "Afficher tout le mois": "Show whole month", "Afficher cette semaine": "Show this week", "Ajouter": "Add", "+ Ajouter": "+ Add", "+ Ajouter un compte": "+ Add an account", "+ Ajouter une course": "+ Add a shopping item", "Apparence": "Appearance", "Appuie sur + pour ajouter une op\xE9ration.": "Tap + to add a transaction.", "Appuie sur + pour en ajouter une.": "Tap + to add one.", "Article": "Item", "Astuce : cr\xE9e un compte dans Budget pour suivre ton solde.": "Tip: create an account in Budget to track your balance.", "Aucun revenu not\xE9 ce mois-ci": "No income recorded this month", "Aucune dette en cours. Continue comme \xE7a !": "No debts right now. Keep it up!", "Aucune d\xE9pense not\xE9e ce mois-ci": "No expenses recorded this month", "Aucune op\xE9ration pour l\u2019instant.": "No transactions yet.", "Aujourd\u2019hui": "Today", "Hier": "Yesterday", "Autre": "Other", "Basse": "Low", "Bilan & d\xE9cisions": "Summary & decisions", "Budget mensuel": "Monthly budget", "CETTE SEMAINE": "THIS WEEK", "Ce que je dois": "What I owe", "Ce que je dois ou ce qu\u2019on me doit": "What I owe or am owed", "Ce qu\u2019on me doit": "What I am owed", "Ce qu\u2019on te doit couvre exactement tes dettes.": "What you are owed exactly covers your debts.", "Changer la connexion au Google Sheet ?": "Change the Google Sheet connection?", "Chaque d\xE9pense, revenu ou \xE9pargne est rattach\xE9 \xE0 un compte.": "Every expense, income or saving is linked to an account.", "Chaque mois": "Every month", "Chaque semaine": "Every week", "Ch\xE8que": "Cheque", "Cocher sans enregistrer de d\xE9pense": "Check without recording an expense", "Compte": "Account", "Compte par d\xE9faut": "Default account", "Compte supprim\xE9": "Account deleted", "Compte \xE9pargne": "Savings account", "Comptes": "Accounts", "Connecter": "Connect", "Connexion": "Connection", "Connexion \xE0 ton Google Sheet": "Connect to your Google Sheet", "Connexion\u2026 (jusqu\u2019\xE0 30 s)": "Connecting\u2026 (up to 30 s)", "Conseil suivant": "Next tip", "Conseiller": "Advisor", "Cr\xE9ance": "Receivable", "Cr\xE9ances": "Receivables", "Cr\xE9ancier": "Creditor", "Date limite d\xE9pass\xE9e": "Deadline passed", "Destination de l\u2019\xE9pargne": "Savings destination", "Dette ou cr\xE9ance": "Debt or receivable", "Dettes \xB7 Cr\xE9ances": "Debts \xB7 Receivables", "Devise": "Currency", "D\xE9biteur": "Debtor", "D\xE9j\xE0 rembours\xE9": "Already repaid", "D\xE9j\xE0 re\xE7u": "Already received", "D\xE9lai d\xE9pass\xE9": "Time exceeded", "D\xE9pense": "Expense", "D\xE9pense, revenu ou \xE9pargne": "Expense, income or saving", "D\xE9penses": "Expenses", "En retard": "Overdue", "Enregistrer": "Save", "Esp\xE8ces": "Cash", "Esp\xE8ces, banque, mobile money\u2026": "Cash, bank, mobile money\u2026", "Ex. 5 kg": "e.g. 5 kg", "Ex. Compte courant": "e.g. Checking account", "Ex. Riz": "e.g. Rice", "Fr\xE9quence": "Frequency", "Habitudes": "Habits", "Hors ligne : donn\xE9es en cache": "Offline: cached data", "Il revient automatiquement dans ta liste selon la fr\xE9quence choisie.": "It returns to your list automatically, based on the chosen frequency.", "Indique le montant": "Enter the amount", "Je dois": "I owe", "Jeton": "Token", "Langue": "Language", "Libell\xE9": "Label", "Mobile money": "Mobile money", "Modifier": "Edit", "Modifier la d\xE9pense": "Edit expense", "Modifier le compte": "Edit account", "Modifier le revenu": "Edit income", "Modifier l\u2019article": "Edit item", "Modifier l\u2019\xE9pargne": "Edit saving", "Mois pr\xE9c\xE9dent": "Previous month", "Mois suivant": "Next month", "Montant d\xFB": "Amount owed", "Montant et date requis": "Amount and date required", "Montant initial": "Initial amount", "Montant pr\xEAt\xE9": "Amount lent", "Moyen": "Method", "Moyen de paiement par d\xE9faut": "Default payment method", "Nom": "Name", "Nom requis": "Name required", "Nouveau compte": "New account", "Nouveau revenu": "New income", "Nouvel article": "New item", "Nouvelle d\xE9pense": "New expense", "Nouvelle \xE9pargne": "New saving", "On me doit": "I am owed", "On te doit :": "You are owed:", "Optionnel": "Optional", "Op\xE9rations affect\xE9es": "Transactions assigned", "Op\xE9rations enregistr\xE9es": "Recorded transactions", "Paiement libre": "Free payment", "Plus tard": "Later", "Position nette": "Net position", "Priorit\xE9 haute": "High priority", "Prix estim\xE9": "Estimated price", "Prix pay\xE9": "Price paid", "Profil": "Profile", "Pr\xE9nom": "First name", "Quantit\xE9": "Quantity", "Que veux-tu enregistrer ?": "What do you want to record?", "REMBOURSEMENT GLOBAL": "OVERALL REPAYMENT", "Records": "Records", "Retour": "Back", "Rien ce mois-ci.": "Nothing this month.", "Rien \xE0 acheter pour l\u2019instant.": "Nothing to buy for now.", "R\xE9essayer": "Retry", "R\xE9glages": "Settings", "Saisis le jeton": "Enter the token", "Sant\xE9": "Health", "Signaler une \xE9ch\xE9ance": "Flag a due date", "Solde de d\xE9part": "Starting balance", "Solde restant": "Remaining balance", "Sold\xE9e": "Settled", "Source du revenu": "Income source", "Supprimer": "Delete", "Supprimer ce compte ? Ses op\xE9rations resteront dans \xAB Non affect\xE9 \xBB.": "Delete this account? Its transactions will stay under \u201CUnassigned\u201D.", "Supprimer cet article ?": "Delete this item?", "Supprimer cette d\xE9pense ?": "Delete this expense?", "Supprimer d\xE9finitivement de la liste ?": "Delete permanently from the list?", "Supprimer le compte": "Delete account", "Ta liste de courses est vide pour aujourd\u2019hui": "Your shopping list is empty for today", "Termin\xE9": "Done", "Tous les 2 mois": "Every 2 months", "Toutes les 2 semaines": "Every 2 weeks", "Toutes les op\xE9rations \xAB Non affect\xE9 \xBB seront rattach\xE9es au compte choisi.": "All \u201CUnassigned\u201D transactions will be linked to the chosen account.", "Un article de ta liste p\xE9riodique": "An item from your recurring list", "Un mouvement sur l\u2019un de tes comptes": "A movement on one of your accounts", "Une seule fois": "Once", "Valider": "Confirm", "Voir plus": "See more", "\xC0 acheter": "To buy", "\xC0 jour": "Up to date", "\xC0 payer en priorit\xE9": "Pay first", "\xC0 propos": "About", "\xC0 r\xE9clamer en priorit\xE9": "Claim first", "\xC0 surveiller": "To watch", "\xC0 venir": "Upcoming", "\xC9CH\xC9ANCES DU MOIS": "DUE THIS MONTH", "\xC9chec de l\u2019enregistrement : ": "Save failed: ", "\xC9pargne": "Savings", "Revenus": "Income", "Revenu": "Income", "Tout": "All", "Dettes": "Debts", "Dette": "Debt", "Courses": "Shopping", "Liste": "List", "Bilan": "Summary", "Clair": "Light", "Sombre": "Dark", "Salaire": "Salary", "Cadeau": "Gift", "Remboursement": "Repayment", "Investissement": "Investment", "Alimentation": "Food", "Logement": "Housing", "Loisirs": "Leisure", "Factures": "Bills", "Virement": "Transfer", "Carte": "Card", "Encaisser": "Collect", "Rembourser": "Repay", "encaissement": "collection", "remboursement": "repayment", "re\xE7u": "received", "rembours\xE9": "repaid", "Note": "Note", "Marquer": "Mark", "Nom du compte": "Account name", "Type": "Type", "Couleur": "Color", "Solde": "Balance", "Solde fin de mois": "End-of-month balance", "Non affect\xE9": "Unassigned", "Banque": "Bank", "\xC9pargne": "Savings", "Mobile Money": "Mobile money", "Compte courant": "Checking account", "Priorit\xE9": "Priority", "Normale": "Normal", "Haute": "High", "Contact": "Contact", "Notes": "Notes", "\xC9ch\xE9ance": "Due date", "Mensualit\xE9": "Monthly payment", "Jour du mois": "Day of month", "Montant": "Amount", "Paiement": "Payment", "Encaissement": "Collection", "Confirmer": "Confirm", "Fermer": "Close", "Aucune": "None", "Aucun": "None", "Fait": "Done", "Jours": "Days", "jours": "days", "Mois": "Months", "Progression": "Progress", "Op\xE9rations": "Transactions", "Rembours\xE9 ce mois": "Repaid this month", "Re\xE7u ce mois": "Received this month" };
 const ENP = [[/^Cette semaine : (.+)$/, (m, d) => "This week: " + d], [/^Semaine : (.+)$/, (m, d) => "Week: " + d], [/^Fin estimée : (.+) \((\d+) mois\)$/, (m, d, n) => `Estimated end: ${d} (${n} months)`], [/^reste (.+)$/, (m, v) => `${v} left`], [/^(.+) le (\d+) du mois$/, (m, v, d) => `${v} on day ${d} of the month`], [/^Modifier (la|le) (.+)$/, (m, a, w) => "Edit " + trC(w)], [/^Nouvelle (.+)$/, (m, w) => "New " + trC(w)], [/^(\d+)% remboursé$/, (m, n) => `${n}% repaid`], [/^En retard de (\d+) j$/, (m, n) => `Overdue by ${n} d`], [/^([\d\s\u00a0\u202f]+) dû$/, (m, v) => `${v} owed`], [/^sur ([\d\s\u00a0\u202f]+)$/, (m, v) => `of ${v}`], [/^Reçu : (.+)$/, (m, v) => `Received: ${v}`], [/^Remboursé : (.+)$/, (m, v) => `Repaid: ${v}`], [/^Même en récupérant tout, il te manquera (.+) pour solder tes dettes\.$/, (m, v) => `Even if you recover everything, you will still be short ${v} to clear your debts.`], [/^Tes créances couvrent (\d+)% de tes dettes$/, (m, n) => `Your receivables cover ${n}% of your debts`], [/^(\p{Extended_Pictographic}\uFE0F?) Si tu récupères (.+) \((.+)\), tu couvres (\d+)% de tes dettes en retard\.$/u, (m, e, w, v, n) => `${e} If you recover ${w} (${v}), you cover ${n}% of your overdue debts.`], [/^(\p{Extended_Pictographic}\uFE0F?) (.+)$/u, (m, e, r) => e + " " + trC(r)], [/^(.*?) ·$/, (m, r) => trC(r) + " \xB7"], [/^(\d+) articles? à acheter\. Un article coché est ajouté à tes dépenses\.$/, (m, n) => `${n} item${n > 1 ? "s" : ""} to buy. A checked item is added to your expenses.`], [/^en retard de (\d+) j$/, (m, n) => `${n} d overdue`], [/^Prochain achat (.+)$/, (m, d) => `Next purchase ${d}`], [/^(.+) \(dans (\d+) j\)$/, (m, d, n) => `${d} (in ${n} d)`], [/^Articles? cochés?$/, (m) => /s$/.test(m) ? "Checked items" : "Checked item"], [/^Budget dépassé de (.+?)\.?$/, (m, v) => `Budget exceeded by ${v}.`], [/^Reste (.+) sur ton budget de (.+)$/, (m, a, b) => `${a} left of your ${b} budget`], [/^Je dois \((\d+)\)$/, (m, n) => `I owe (${n})`], [/^On me doit \((\d+)\)$/, (m, n) => `I am owed (${n})`], [/^Soldées \((\d+)\)$/, (m, n) => `Settled (${n})`], [/^Dans les dépenses$/, () => "In expenses"], [/^de dépenses déjà effectuées sur$/, () => "spent so far out of"], [/^de ton budget du mois\.$/, () => "of your monthly budget."], [/^de dépenses ce mois-ci\.$/, () => "spent this month."], [/^de revenus reçus ce mois-ci\.$/, () => "of income received this month."], [/^mis de côté ce mois-ci\.$/, () => "saved this month."], [/^de flux net ce mois-ci \(revenus − dépenses − épargne\)\.$/, () => "net flow this month (income \u2212 expenses \u2212 savings)."], [/^(Avant le|Depuis le|Échéance|Jusqu’au) (.+)$/, (m, p, d) => ({ "Avant le": "Before", "Depuis le": "Since", "\xC9ch\xE9ance": "Due", "Jusqu\u2019au": "Until" })[p] + " " + d], [/^(À payer|À recevoir|À jour) ·? ?(.*)$/, (m, p, r) => ({ "\xC0 payer": "To pay", "\xC0 recevoir": "To receive", "\xC0 jour": "Up to date" })[p] + (r ? " \xB7 " + r : "")], [/^Échec : (.+)$/, (m, e) => "Failed: " + e]];
 
 function trS(str) {
