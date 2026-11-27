@@ -1499,8 +1499,6 @@ body {
   margin-right: 6px;
   display: block;
 }
-
-html[data-theme=dark] 
 .adv {
   height: 106px;
   width: auto;
@@ -2568,8 +2566,8 @@ function zbbModal(customAmt) {
 
     <button class="pp" id="zbb_recalc" style="width:100%;margin-bottom:18px;border-radius:28px">Recalculer la répartition</button>
 
-    <div style="margin-top:4px">${rows}
-      <div style="display:flex;justify-content:space-between;padding:14px 0;font-weight:700">
+    <div style="margin-top:4px;background:var(--soft);border-radius:20px;padding:4px 16px 8px">${rows}
+      <div style="display:flex;justify-content:space-between;padding:14px 0;font-weight:700;border-top:1px solid var(--ln)">
         <span>Total affecté</span>
         <span>${mdot(total)} FCFA</span>
       </div>
@@ -2615,7 +2613,10 @@ function accueil() {
   S.cp = 0;
   CM = CM % m.length;
   const card = (t, v, k, extra, badge, cls) => `<button class="hcard ${cls || ""}" data-a="hgo" data-t="${k}"><div class="hct">${t}</div><div class="hcv"><span class="am2">${dot(v)}</span>${CHEVR}${badge || ""}</div>${extra || ""}</button>`;
-  return `<div class="hmx ${S.hide ? "hid" : ""}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide ? "Afficher" : "Masquer"} les montants">${SVG(S.hide ? EYEOFF : EYE)}</button><button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button></div>
+  return `<div class="hmx ${S.hide ? "hid" : ""}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide ? "Afficher" : "Masquer"} les montants">${SVG(S.hide ? EYEOFF : EYE)}</button><button class="hbtn" data-a="zbb" aria-label="Plan ZBB" style="background:var(--ink);color:var(--bg)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2zm6 10l.9 2.7L22 16l-3.1.9L18 20l-.9-3.1L14 16l3.1-.9L18 12zM6 14l.9 2.7L10 18l-3.1.9L6 22l-.9-3.1L2 18l3.1-.9L6 14z"/></svg>
+    </button>
+    <button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button></div>
   <div class="hsc"><div class="hbub${pop}" id="cb"><span>${m[CM]}</span></div><button class="hadvb" data-a="cow" aria-label="Conseil suivant">${ADV}</button></div>
   <div class="hpickw"><button class="hpill" data-a="hsel">${HL[hk] || "D\xE9penses"}${SVG(CHEV)}</button></div>
   <div class="hamt${+ha > 0 ? " on" : ""}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2, String(ha).length + 0.2)}ch;font-size:${hfs(String(ha).length)}px"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
@@ -2939,11 +2940,11 @@ function accSheet() {
   if ((S.budgetTab || "acc") === "zbb") {
     const plan = (() => { try { return JSON.parse(S.set.zbbPlan || "null"); } catch(e) { return null; } })();
     const h = homeStats();
-    sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <span>Budget</span>
+    sheet(`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <h3 class="st" style="margin:0">Budget</h3>
       <div style="display:flex;gap:6px">
-        <button class="fch" data-a="budgetTab" data-t="acc">Comptes</button>
         <button class="fch on" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
+        <button class="fch" data-a="budgetTab" data-t="acc">Comptes</button>
       </div>
     </div>
     <div style="text-align:center;padding:28px 10px 10px">
@@ -2985,11 +2986,11 @@ function accSheet() {
     ...S.tx.filter((t) => itemOf(t.itemId) && mine(t.compte)).map((t) => ({ k: "t", o: t, d: t.date, c: t.creeLe || "" }))
   ].sort((p, q) => (q.d + q.c).localeCompare(p.d + p.c)).slice(0, 20);
   const chips = list.map((x) => `<button class="fch ${x.id === a.id ? "on" : ""}" data-a="accsel" data-id="${x.id}">${esc(x.nom)}</button>`).join("") + '<button class="fch" data-a="addAcc" aria-label="Ajouter">+</button>';
-  sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <span>Budget</span>
+  sheet(`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <h3 class="st" style="margin:0">Budget</h3>
       <div style="display:flex;gap:6px">
-        <button class="fch ${(S.budgetTab||"acc")==="acc"?"on":""}" data-a="budgetTab" data-t="acc">Comptes</button>
         <button class="fch ${(S.budgetTab||"acc")==="zbb"?"on":""}" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
+        <button class="fch ${(S.budgetTab||"acc")==="acc"?"on":""}" data-a="budgetTab" data-t="acc">Comptes</button>
       </div>
     </div>
     <div class="fchips wrap">${chips}</div>
@@ -3397,7 +3398,7 @@ function render() {
   const T = { debts: "Dettes", exp: "Budget", shop: "Courses", set: "R\xE9glages" }[S.tab], hdr = `<div class="hbar"><button class="hbtn" data-a="${S.tab === "set" ? "gear" : "back"}" aria-label="Retour">${BACK}</button>${S.tab === "set" ? "<span></span>" : `<button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button>`}</div><div class="ptr"><h1 class="ptt">${T}</h1>${S.tab === "exp" ? '<button class="pill2" data-a="accs">Comptes</button>' : ""}</div>`;
   $("#app").innerHTML = (S.tab === "home" ? "" : hdr) + (S.tab === "set" ? setTab : TABS[S.tab][1])();
   const fz = '<div class="fz"></div>';
-  $("#fab").innerHTML = { home: fz + '<button class="fabp" data-a="zbb">✦ Mon plan ZBB</button>', shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
+  $("#fab").innerHTML = { shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
 }
 // === DETTES : DÉTAIL ET FORMULAIRES ===
 
