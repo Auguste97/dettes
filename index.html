@@ -1505,6 +1505,16 @@ body {
   display: block;
   aspect-ratio: 61/106;
   overflow: visible;
+  animation: adv-breathe 3.2s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+@keyframes adv-breathe {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.03) translateY(-2px); }
+}
+.hadvb:active .adv {
+  animation: none;
+  transform: scale(0.96);
 }
 html[data-theme=dark] .adv {
   filter: invert(1);
@@ -2466,6 +2476,7 @@ function homeStats() {
 
 function cowMsgs(h) {
   const a = (v) => `<b class="am2">${shortN(v)}</b>`, m = [];
+  const inc = h.inc || 0, debt = h.rD || 0, spent = h.spent || 0, sav = h.sav || 0, shop = h.shV || 0;
   if (S.set.lang === "en") {
     m.push(h.rD > 0 ? `You currently have ${a(h.rD)} of debt to repay` : "No debts right now. Keep it up!");
     if (h.nl) m.push(`Careful: <b>${h.nl}</b> due date${h.nl > 1 ? "s are" : " is"} overdue`);
@@ -2474,6 +2485,11 @@ function cowMsgs(h) {
     m.push(h.inc > 0 ? `This month you received ${a(h.inc)} in income` : "No income recorded this month");
     m.push(h.sav > 0 ? `You have set aside ${a(h.sav)} in total. Well done!` : "No savings recorded yet. A small start?");
     m.push(h.shN > 0 ? `You have <b>${h.shN}</b> item${h.shN > 1 ? "s" : ""} to buy${h.shV > 0 ? `, about ${a(h.shV)}` : ""}` : "Your shopping list is empty for today");
+    if (inc > 0) {
+      const d = Math.round(inc * 0.3), e = Math.round(inc * 0.4), c2 = Math.round(inc * 0.15), s = Math.round(inc * 0.15);
+      m.push(`Zero-based tip: allocate every franc of ${a(inc)} → debts ${a(d)}, essentials ${a(e)}, shopping ${a(c2)}, savings ${a(s)}.`);
+      if (debt > 0) m.push(`Priority: put at least ${a(Math.min(d, debt))} of your next income on the most urgent debt first.`);
+    }
     return m;
   }
   m.push(h.rD > 0 ? `Tu as actuellement ${a(h.rD)} de dettes \xE0 rembourser` : "Aucune dette en cours. Continue comme \xE7a !");
@@ -2483,6 +2499,14 @@ function cowMsgs(h) {
   m.push(h.inc > 0 ? `Ce mois-ci, tu as re\xE7u ${a(h.inc)} de revenus` : "Aucun revenu not\xE9 ce mois-ci");
   m.push(h.sav > 0 ? `Tu as mis ${a(h.sav)} de c\xF4t\xE9 au total. Bravo !` : "Pas encore d\u2019\xE9pargne not\xE9e. Un petit d\xE9but ?");
   m.push(h.shN > 0 ? `Tu as <b>${h.shN}</b> article${h.shN > 1 ? "s" : ""} \xE0 acheter${h.shV > 0 ? `, environ ${a(h.shV)}` : ""}` : "Ta liste de courses est vide pour aujourd\u2019hui");
+  if (inc > 0) {
+    const d = Math.round(inc * 0.3), e = Math.round(inc * 0.4), c2 = Math.round(inc * 0.15), s = Math.round(inc * 0.15);
+    m.push(`Conseil ZBB : alloue chaque franc de tes ${a(inc)} → dettes ${a(d)}, essentiels ${a(e)}, courses ${a(c2)}, \xE9pargne ${a(s)}.`);
+    if (debt > 0) m.push(`Priorit\xE9 : mets au moins ${a(Math.min(d, debt))} de ton prochain revenu sur la dette la plus urgente.`);
+    if (spent > inc * 0.7) m.push(`Tes d\xE9penses d\xE9passent 70 % de tes revenus. R\xE9duis les non-essentiels avant d\u2019ajouter des courses.`);
+  } else if (debt > 0) {
+    m.push(`Sans revenu not\xE9 ce mois, concentre-toi sur les cr\xE9ances \xE0 r\xE9cup\xE9rer pour rembourser tes ${a(debt)}.`);
+  }
   return m;
 }
 let CM = 0;
@@ -2857,6 +2881,7 @@ function accSheet() {
         <div><b>${mdot(week)}</b><small>Total d\xE9pens\xE9 cette semaine</small></div>
         <div><b>${mdot(month)}</b><small>Total d\xE9pens\xE9 ce mois</small></div>
       </div>
+      ${accBal(a) < 0 ? `<div class="astats" style="margin-top:8px;border-top:1px solid var(--ln);padding-top:10px"><div><b class="rd">${mdot(Math.abs(accBal(a)))}</b><small>Emprunt / solde n\xE9gatif</small></div></div>` : ""}
     </div>
     ${a.virt ? '<button class="lk" data-a="assign">Affecter les anciennes op\xE9rations</button>' : ""}
     <div class="sx"><span>Activit\xE9s li\xE9es au compte</span></div>
@@ -3037,7 +3062,7 @@ function expForm(id, pre) {
   <div class="box"><div class="kv"><span>Libell\xE9</span><input id="x_l" placeholder="Optionnel" value="${esc(EX.libelle)}"></div><div class="kv"><span>Date</span><input id="x_d" type="date" value="${EX.date}"></div></div>
   <div class="hl" style="text-align:center">Moyen</div><div class="chips">${Object.keys(MOY).map((k) => `<button class="chip ${EX.moyen === k ? "on" : ""}" data-xm="${k}">${MOY[k]}</button>`).join("")}</div>
   <div class="box"><div class="kv"><span>Note</span><input id="x_n" placeholder="Optionnel" value="${esc(EX.note)}"></div></div>
-  <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e ? `<button class="lk" data-a="delExp" data-id="${id}">Supprimer</button>` : ""}`);
+  <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e && T === "DEP" ? `<button class="lk" data-a="expToShop" data-id="${id}">Transformer en course</button>` : ""}${e ? `<button class="lk" data-a="delExp" data-id="${id}">Supprimer</button>` : ""}`);
   $("#ok").onclick = () => {
     const v = parseFloat($("#x_m").value), d = $("#x_d").value;
     if (!(v > 0) || !d) return toast("Montant et date requis");
@@ -3117,11 +3142,13 @@ function shopCal() {
 }
 
 function shopTab() {
-  const T = today(), all = S.shop.map((i) => ({ i, n: sNext(i) })), due2 = all.filter((x) => x.n && x.n <= T && x.i.lastBought !== T).sort((a, b) => a.n.localeCompare(b.n)), chk = all.filter((x) => x.i.lastBought === T), later = all.filter((x) => x.i.lastBought !== T && !(x.n && x.n <= T)).sort((a, b) => (a.n || "9").localeCompare(b.n || "9"));
-  const est = sum(due2, (x) => +x.i.prix || 0), sub = (i) => [i.qte, FREQ[+i.freq]].filter(Boolean).map(esc).join(" \xB7 "), pr = (i) => i.prix ? `<b class="cp">${dot(i.prix)}</b>` : "";
+  const T = today(), all = S.shop.map((i) => ({ i, n: sNext(i) }));
+  const byPr = (a, b) => (PR[b.i.priorite] || 2) - (PR[a.i.priorite] || 2) || (a.n || "9").localeCompare(b.n || "9");
+  const due2 = all.filter((x) => x.n && x.n <= T && x.i.lastBought !== T).sort(byPr), chk = all.filter((x) => x.i.lastBought === T), later = all.filter((x) => x.i.lastBought !== T && !(x.n && x.n <= T)).sort(byPr);
+  const est = sum(due2, (x) => +x.i.prix || 0), sub = (i) => [i.qte, FREQ[+i.freq], i.date ? fdate(i.date) : ""].filter(Boolean).map(esc).join(" \xB7 "), pr = (i) => i.prix ? `<b class="cp">${dot(i.prix)}</b>` : "";
   const row = (x, on, act, extra) => {
     const i = x.i;
-    return `<div class="cr"><button class="rk ${on ? "on" : ""}" data-a="${act}" data-id="${i.id}" aria-label="${on ? "D\xE9cocher" : "Cocher"}"></button><button class="grow" data-a="shop" data-id="${i.id}" style="text-align:left"><b>${esc(i.nom)}</b><small>${extra}</small></button>${pr(i)}</div>`;
+    return `<div class="cr"><button class="rk ${on ? "on" : ""}" data-a="${act}" data-id="${i.id}" aria-label="${on ? "D\xE9cocher" : "Cocher"}"></button><button class="grow" data-a="shop" data-id="${i.id}" style="text-align:left"><b>${esc(i.nom)}</b><small>${extra}${prTag(i) ? " \xB7 " + prTag(i) : ""}</small></button>${pr(i)}</div>`;
   };
   return `<div class="pcard"><div class="pbig">${dot(est)}<em>${esc(S.set.devise)}</em></div><div class="psub">${due2.length} article${due2.length > 1 ? "s" : ""} \xE0 acheter. Un article coch\xE9 est ajout\xE9 \xE0 tes d\xE9penses.</div>${shopCal()}</div>` + (due2.length ? `<div class="sx"><span>\xC0 acheter</span><span>${mdot(est)}</span></div>` + due2.map((x) => {
     const dl = dbt(x.n, T);
@@ -3133,14 +3160,15 @@ function shopTab() {
 }
 
 function shopForm(id) {
-  const e = id ? S.shop.find((x) => x.id === id) : null, i = e || { nom: "", qte: "", prix: "", freq: 7 };
-  sheet(`<h3 class="st">${e ? "Modifier l\u2019article" : "Nouvel article"}</h3><p class="ss">Il revient automatiquement dans ta liste selon la fr\xE9quence choisie.</p>
-  <div class="box"><div class="kv"><span>Article</span><input id="h_n" placeholder="Ex. Riz" value="${esc(i.nom)}"></div><div class="kv"><span>Quantit\xE9</span><input id="h_q" placeholder="Ex. 5 kg" value="${esc(i.qte)}"></div><div class="kv"><span>Prix estim\xE9</span><input id="h_p" type="number" inputmode="decimal" placeholder="0" value="${i.prix || ""}"></div>${S.acc.length ? `<div class="kv"><span>Compte</span><select id="h_c">${S.acc.map((a) => `<option value="${a.id}" ${a.id === (acOf(i.compte) ? i.compte : defAcc()) ? "selected" : ""}>${esc(a.nom)}</option>`).join("")}</select></div>` : ""}<div class="kv"><span>Fr\xE9quence</span><select id="h_f">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${+k === +i.freq ? "selected" : ""}>${v}</option>`).join("")}</select></div></div>
+  const e = id ? S.shop.find((x) => x.id === id) : null, i = e || { nom: "", qte: "", prix: "", freq: 7, date: "", priorite: "NORMALE" };
+  const PRI = i.priorite || "NORMALE";
+  sheet(`<h3 class="st">${e ? "Modifier l\u2019article" : "Nouvel article"}</h3><p class="ss">Il revient automatiquement dans ta liste selon la fr\xE9quence choisie. Date et priorit\xE9 pour les urgences.</p>
+  <div class="box"><div class="kv"><span>Article</span><input id="h_n" placeholder="Ex. Riz" value="${esc(i.nom)}"></div><div class="kv"><span>Quantit\xE9</span><input id="h_q" placeholder="Ex. 5 kg" value="${esc(i.qte)}"></div><div class="kv"><span>Prix estim\xE9</span><input id="h_p" type="number" inputmode="decimal" placeholder="0" value="${i.prix || ""}"></div>${S.acc.length ? `<div class="kv"><span>Compte</span><select id="h_c">${S.acc.map((a) => `<option value="${a.id}" ${a.id === (acOf(i.compte) ? i.compte : defAcc()) ? "selected" : ""}>${esc(a.nom)}</option>`).join("")}</select></div>` : ""}<div class="kv"><span>Fr\xE9quence</span><select id="h_f">${Object.entries(FREQ).map(([k, v]) => `<option value="${k}" ${+k === +i.freq ? "selected" : ""}>${v}</option>`).join("")}</select></div><div class="kv"><span>Date</span><input id="h_d" type="date" value="${i.date || ""}"></div><div class="kv"><span>Priorit\xE9</span><select id="h_pr"><option value="HAUTE" ${PRI === "HAUTE" ? "selected" : ""}>Haute</option><option value="NORMALE" ${PRI === "NORMALE" ? "selected" : ""}>Normale</option><option value="BASSE" ${PRI === "BASSE" ? "selected" : ""}>Basse</option></select></div></div>
   <div class="two"><button class="pb" data-a="close">Annuler</button><button class="pp" id="ok">Enregistrer</button></div>${e ? `<button class="lk" data-a="delShop" data-id="${id}">Supprimer</button>` : ""}`);
   $("#ok").onclick = () => {
     const n = $("#h_n").value.trim();
     if (!n) return toast("Nom requis");
-    const o = { ...e || { lastBought: "", prevBought: "", expId: "" }, id: e ? e.id : uid(), nom: n, qte: $("#h_q").value.trim(), prix: parseFloat($("#h_p").value) || 0, freq: +$("#h_f").value, compte: $("#h_c") ? $("#h_c").value : e && e.compte || "", creeLe: e ? e.creeLe : today() };
+    const o = { ...e || { lastBought: "", prevBought: "", expId: "" }, id: e ? e.id : uid(), nom: n, qte: $("#h_q").value.trim(), prix: parseFloat($("#h_p").value) || 0, freq: +$("#h_f").value, compte: $("#h_c") ? $("#h_c").value : e && e.compte || "", date: $("#h_d").value || "", priorite: $("#h_pr").value || "NORMALE", creeLe: e ? e.creeLe : today() };
     const k = S.shop.findIndex((x) => x.id === o.id);
     k < 0 ? S.shop.push(o) : S.shop[k] = o;
     closeSheet();
@@ -3523,6 +3551,15 @@ document.addEventListener("click", (e) => {
   else if (a === "exp") expForm(id);
   else if (a === "delExp") {
     if (confirm("Supprimer cette d\xE9pense ?")) del("exp", id);
+  } else if (a === "expToShop") {
+    const e = S.exp.find((x) => x.id === id);
+    if (!e) return;
+    closeSheet();
+    const o = { id: uid(), nom: e.libelle || "Course", qte: "", prix: e.montant, freq: 0, lastBought: "", prevBought: "", expId: "", compte: e.compte || "", date: e.date || today(), priorite: "NORMALE", creeLe: today() };
+    S.shop.push(o);
+    render();
+    sync("saveShop", o);
+    toast("Ajout\xE9 \xE0 la liste de courses");
   } else if (a === "em") {
     const d = new Date(S.em.y, S.em.m + +D.d, 1);
     S.em = { y: d.getFullYear(), m: d.getMonth() };
