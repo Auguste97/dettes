@@ -2641,16 +2641,12 @@ let CM = 0;
 
 
 
-function zbbModal(customAmt) {
+/* Répartition ZBB : chaque franc du revenu est affecté à un poste */
+function zbbPlan(amt) {
   const h = homeStats();
-  const baseInc = h.inc || 0;
-  const debt = h.rD || 0;
-  const spent = h.spent || 0;
-  const shop = h.shV || 0;
-  const late = h.nl || 0;
-  const amt = customAmt != null ? +customAmt : (S.zbbSim != null ? +S.zbbSim : baseInc);
+  const debt = h.rD || 0, spent = h.spent || 0, shop = h.shV || 0, late = h.nl || 0;
+  const pct = (v) => (amt ? Math.round((v / amt) * 100) : 0);
 
-  // Categories based on real data + ZBB priority
   const factures = Math.round(spent * 0.25) || Math.round(amt * 0.08);
   const transport = Math.round(spent * 0.08) || Math.round(amt * 0.04);
   const courses = shop || Math.round(amt * 0.12);
@@ -2658,17 +2654,20 @@ function zbbModal(customAmt) {
   const dettesPrio = Math.min(debt, Math.round(amt * 0.30));
 
   const items = [
-    { name: "Dettes prioritaires", sub: late ? `${late} échéance(s) en retard` : "Remboursement prioritaire", amt: dettesPrio, pct: amt ? Math.round(dettesPrio / amt * 100) : 0 },
-    { name: "Factures", sub: "Moyenne mensuelle observée", amt: factures, pct: amt ? Math.round(factures / amt * 100) : 0 },
-    { name: "Transport", sub: "Moyenne mensuelle observée", amt: transport, pct: amt ? Math.round(transport / amt * 100) : 0 },
-    { name: "Courses planifiées", sub: shop ? "Articles prévus dans les 30 prochains jours" : "Estimation courses du mois", amt: courses, pct: amt ? Math.round(courses / amt * 100) : 0 },
-    { name: "Épargne de sécurité", sub: "10 % du revenu, jusqu’à 1 000 000 FCFA", amt: epargneSecu, pct: amt ? Math.round(epargneSecu / amt * 100) : 0 }
-  ];
+    { name: "Dettes prioritaires", sub: late ? `${late} échéance(s) en retard` : "Remboursement prioritaire", amt: dettesPrio },
+    { name: "Factures", sub: "Moyenne mensuelle observée", amt: factures },
+    { name: "Transport", sub: "Moyenne mensuelle observée", amt: transport },
+    { name: "Courses planifiées", sub: shop ? "Articles prévus dans les 30 prochains jours" : "Estimation courses du mois", amt: courses },
+    { name: "Épargne de sécurité", sub: "10 % du revenu, jusqu’à 1 000 000 FCFA", amt: epargneSecu }
+  ].map((x) => ({ ...x, pct: pct(x.amt) }));
 
-  const total = items.reduce((s, i) => s + i.amt, 0);
-  const overflow = total > amt && amt > 0;
+  const total = items.reduce((t, x) => t + x.amt, 0);
+  return { items, total, overflow: amt > 0 && total > amt };
+}
 
-  const rows = items.map(i => `
+function zbbBody(amt) {
+  const p = zbbPlan(amt);
+  const rows = p.items.map((i) => `
     <div class="zrow">
       <div class="zl">
         <b>${esc(i.name)}</b>
@@ -2679,6 +2678,21 @@ function zbbModal(customAmt) {
         <small>${i.pct}%</small>
       </div>
     </div>`).join("");
+  return `<div class="zrcp">
+      ${rows}
+      <div class="ztot">
+        <span>Total affecté</span>
+        <span>${mdot(p.total)}</span>
+      </div>
+    </div>
+    ${p.overflow ? `<div class="zwarn">Tes besoins estimés dépassent ce revenu de ${mdot(p.total - amt)}. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}`;
+}
+
+function zbbModal() {
+  const baseInc = homeStats().inc || 0;
+  // Le montant saisi est conservé tant que le revenu enregistré ne change pas ;
+  // dès qu'un revenu est modifié, la saisie suit automatiquement le nouveau total.
+  let amt = S.zbbSim && S.zbbSim.base === baseInc ? +S.zbbSim.v : baseInc;
 
   sheet(`<h3 class="st">Plan d’allocation — ZBB</h3>
     <p class="ss">Chaque franc du revenu est affecté à un besoin précis avant toute dépense.</p>
@@ -2691,15 +2705,7 @@ function zbbModal(customAmt) {
 
     <button class="pp zrecalc" id="zbb_recalc">Recalculer la répartition</button>
 
-    <div class="zrcp">
-      ${rows}
-      <div class="ztot">
-        <span>Total affecté</span>
-        <span>${mdot(total)}</span>
-      </div>
-    </div>
-
-    ${overflow ? `<div class="zwarn">Tes besoins estimés dépassent ce revenu de ${mdot(total - amt)}. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}
+    <div id="zbb_body">${zbbBody(amt)}</div>
 
     <div class="two">
       <button class="pb" data-a="close">Fermer</button>
@@ -2707,17 +2713,19 @@ function zbbModal(customAmt) {
     </div>
     <p class="zfoot">Le plan est une recommandation calculée à partir de tes données enregistrées. Il ne crée pas automatiquement de transactions.</p>`);
 
-  $("#zbb_amt").oninput = (e) => {
-    e.target.style.width = Math.max(1.4, e.target.value.length + 0.4) + "ch";
+  const refresh = () => {
+    const input = $("#zbb_amt");
+    amt = parseFloat(input.value) || 0;
+    S.zbbSim = { v: amt, base: baseInc };
+    input.style.width = Math.max(1.4, input.value.length + 0.4) + "ch";
+    $("#zbb_body").innerHTML = zbbBody(amt);
   };
-  $("#zbb_recalc").onclick = () => {
-    const v = parseFloat($("#zbb_amt").value) || 0;
-    S.zbbSim = v;
-    closeSheet();
-    zbbModal(v);
-  };
+  $("#zbb_amt").oninput = refresh;
+  $("#zbb_recalc").onclick = refresh;
   $("#zbb_valid").onclick = () => {
-    const plan = { amt, total, items, date: today() };
+    refresh();
+    const p = zbbPlan(amt);
+    const plan = { amt, total: p.total, items: p.items, date: today() };
     S.set.zbbPlan = JSON.stringify(plan);
     sync("saveSettings", { zbbPlan: S.set.zbbPlan });
     closeSheet();
@@ -3799,11 +3807,23 @@ document.addEventListener("click", (e) => {
     const e = S.exp.find((x) => x.id === id);
     if (!e) return;
     closeSheet();
-    const o = { id: uid(), nom: e.libelle || "Course", qte: "", prix: e.montant, freq: 0, lastBought: "", prevBought: "", expId: "", compte: e.compte || "", date: e.date || today(), priorite: "NORMALE", creeLe: today() };
+    // Dépense issue d'un achat de course : on annule simplement l'achat
+    const linked = S.shop.find((x) => x.expId === e.id);
+    if (linked) return unbuy(linked.id);
+    // Sinon : la dépense est retirée de la liste et recréée comme course à faire
+    S.exp.splice(S.exp.indexOf(e), 1);
+    sync("setDeleted", "exp", e.id, true);
+    const o = { id: uid(), nom: e.libelle || "Course", qte: "", prix: e.montant, freq: 0, lastBought: "", prevBought: "", expId: "", compte: e.compte || "", date: today(), priorite: "NORMALE", creeLe: today() };
     S.shop.push(o);
     render();
     sync("saveShop", o);
-    toast("Ajout\xE9 \xE0 la liste de courses");
+    toast("Déplacée vers les courses", () => {
+      S.shop.splice(S.shop.indexOf(o), 1);
+      S.exp.push(e);
+      sync("setDeleted", "shop", o.id, true);
+      sync("setDeleted", "exp", e.id, false);
+      render();
+    });
   } else if (a === "showLoans") {
     const loans = S.items.filter(i => i.type === "DETTE" && !st(i).solde && (i.emprunt === true || i.emprunt === "true") && i.compteEmprunt === id);
     sheet(`<h3 class="st">Emprunts li\xE9s \xE0 ce compte</h3><p class="ss">Dettes marqu\xE9es comme emprunt sur ce compte</p>
