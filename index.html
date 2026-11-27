@@ -1403,6 +1403,20 @@ body.hm {
 body.bh .hbtn {
   background: var(--hc);
 }
+.hbr {
+  display: flex;
+  gap: 10px;
+}
+.hbtn.dark,
+body.bh .hbtn.dark {
+  background: var(--ink);
+  color: var(--bg);
+}
+.hbtn svg.spk {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: .6;
+}
 .hbtn svg {
   width: 20px;
   height: 20px;
@@ -1500,7 +1514,7 @@ body {
   display: block;
 }
 
-html[data-theme=dark] 
+
 .adv {
   height: 106px;
   width: auto;
@@ -1987,6 +2001,10 @@ html[data-theme=dark] {
 .ptr .ptt {
   margin: 0;
 }
+.ptrb {
+  display: flex;
+  gap: 8px;
+}
 .pill2 {
   background: var(--hc);
   border-radius: 20px;
@@ -2188,6 +2206,113 @@ html[data-theme=dark] {
   flex: 1;
   font-size: 12.5px;
   margin: 6px 0 16px;
+}
+/* ===== Plan ZBB : style reçu ===== */
+.zamt {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid var(--cl);
+}
+.zamt input {
+  font: inherit;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  text-align: center;
+  background: none;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  padding: 0;
+  max-width: 70%;
+}
+.zamt em {
+  font-style: normal;
+  font-size: 15px;
+  color: var(--mu);
+  font-weight: 500;
+}
+.znote {
+  text-align: center;
+  font-size: 12px;
+  color: var(--mu);
+  margin-top: 8px;
+}
+.zrecalc {
+  width: 100%;
+  margin: 16px 0;
+  border-radius: 28px;
+}
+.zrcp {
+  background: var(--hb);
+  border: 1px solid var(--cl);
+  border-radius: 18px;
+  padding: 4px 16px 6px;
+}
+html[data-theme=dark] .zrcp {
+  background: var(--cs);
+}
+.zrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px dashed var(--cl);
+}
+.zl {
+  min-width: 0;
+}
+.zl b,
+.zr b {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.zl small,
+.zr small {
+  display: block;
+  font-size: 12px;
+  color: var(--mu);
+  margin-top: 2px;
+}
+.zr {
+  text-align: right;
+  flex: none;
+}
+.ztot {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 0 10px;
+  margin-top: 2px;
+  border-top: 2px solid var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+}
+.zwarn {
+  background: #fdf5e6;
+  color: #b8782a;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  margin-top: 14px;
+}
+html[data-theme=dark] .zwarn {
+  background: #2e2619;
+  color: #e0a45a;
+}
+.zfoot {
+  font-size: 11px;
+  color: var(--mu);
+  text-align: center;
+  line-height: 1.4;
+  margin-top: 14px;
 }
 @media (prefers-reduced-motion: reduce) {
   .hbub.pop,
@@ -2445,6 +2570,7 @@ const dot = (n) => {
 };
 const hfs = (l) => Math.max(18, Math.min(46, Math.floor(200 / (Math.max(l, 3) * 0.62))));
 const HL = { DETTE: "Dettes", CREANCE: "Cr\xE9ances", DEP: "D\xE9penses", REV: "Revenus", EPA: "\xC9pargne", SHOP: "Courses" };
+const ZBBICO = '<svg class="spk" viewBox="0 0 24 24"><path d="M12 2.5l2.4 6.9 6.9 2.4-6.9 2.4L12 21l-2.4-6.8-6.9-2.4 6.9-2.4z"/></svg>';
 const ADV = `<svg class="adv" viewBox="0 0 61 106" role="img" aria-label="Conseiller" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14.8972 67.2097C15.1989 65.637 15.5559 63.864 16.9684 62.9059C18.7732 61.6827 20.9557 62.6867 22.0472 64.3195C22.2017 64.5499 22.3453 64.7873 22.4774 65.0307C23.0824 64.3855 23.4374 64.2264 24.2599 64.7243C24.3773 64.9511 24.5173 65.2063 24.6174 65.4378C24.3542 66.5603 24.1578 66.7389 23.4366 67.5997C23.9498 68.8631 24.3021 69.5159 25.5957 70.0733C25.9619 70.2307 26.084 70.5583 26.21 70.9195C25.9773 71.7503 25.5923 72.2706 24.6099 71.9948C23.3909 71.6531 22.4595 70.5801 21.8771 69.5077C21.0084 67.8961 20.8903 65.383 19.0236 64.5575C18.8269 64.4703 18.5005 64.544 18.325 64.6571C16.8529 65.6052 17.5882 68.0422 16.229 68.9862C15.3638 69.5701 13.7096 69.4128 13.3091 70.576C13.11 71.154 13.8752 71.775 14.2751 72.0956C16.4178 73.8132 18.9162 75.083 21.6186 75.6251C22.4049 75.783 23.1971 76.0652 23.0577 77.0593C22.8279 78.2595 21.384 77.8518 20.5985 77.6632C17.3555 76.8854 14.8911 75.4059 12.3363 73.3235C11.6833 74.2592 10.904 75.1525 10.3336 76.12C7.47088 80.9747 6.17769 86.0951 4.91579 91.512C3.77067 96.4279 3.02324 101.051 2.20797 106H0C0.722399 101.046 1.63182 96.1221 2.72632 91.2374C4.09617 85.2137 6.21758 76.8354 10.6888 72.0414C10.7818 71.9418 11.058 71.8581 11.193 71.8216C10.6465 69.051 12.4621 67.7353 14.8972 67.2097Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
 <path d="M5.64746 106C6.35825 100.869 7.22272 95.7603 8.23967 90.6811C8.60618 88.8397 9.03526 87.0008 9.44513 85.1688C9.78158 83.6651 11.8916 84.1123 11.5673 85.6166C10.12 92.3304 8.72072 99.182 7.86899 106H5.64746Z" fill="#2A2A2A" style="fill:#2A2A2A;fill:color(display-p3 0.1647 0.1647 0.1647);fill-opacity:1;"/>
@@ -2543,46 +2669,47 @@ function zbbModal(customAmt) {
   const overflow = total > amt && amt > 0;
 
   const rows = items.map(i => `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--ln)">
-      <div style="min-width:0;padding-right:12px">
-        <b style="display:block;font-size:15px">${i.name}</b>
-        <small style="color:var(--mu);font-size:12px">${i.sub}</small>
+    <div class="zrow">
+      <div class="zl">
+        <b>${esc(i.name)}</b>
+        <small>${esc(i.sub)}</small>
       </div>
-      <div style="text-align:right;flex:none">
-        <b style="font-size:15px">${mdot(i.amt)} FCFA</b>
-        <small style="display:block;color:var(--mu);font-size:12px">${i.pct}%</small>
+      <div class="zr">
+        <b>${mdot(i.amt)}</b>
+        <small>${i.pct}%</small>
       </div>
     </div>`).join("");
 
-  sheet(`<h3 class="st" style="margin-bottom:4px">Plan d’allocation – ZBB</h3>
-    <p class="ss" style="margin-bottom:18px">Chaque franc du revenu est affecté à un besoin précis avant toute dépense.</p>
-    
-    <div style="text-align:center;margin:8px 0 18px">
-      <div style="font-size:13px;color:var(--mu);margin-bottom:4px">Montant à répartir</div>
-      <div class="amtin" style="padding:8px 0">
-        <input id="zbb_amt" type="number" inputmode="decimal" value="${amt || ""}" placeholder="0" style="font-size:36px;letter-spacing:-1px;width:70%">
-        <em style="font-size:16px">${esc(S.set.devise)}</em>
-      </div>
-      ${baseInc > 0 ? `<small style="color:var(--mu)">Revenu enregistré ce mois : ${mdot(baseInc)}</small>` : ""}
+  sheet(`<h3 class="st">Plan d’allocation — ZBB</h3>
+    <p class="ss">Chaque franc du revenu est affecté à un besoin précis avant toute dépense.</p>
+
+    <div class="zamt">
+      <input id="zbb_amt" type="number" inputmode="decimal" value="${amt || ""}" placeholder="0" style="width:${Math.max(1.4, String(amt || "").length + 0.4)}ch">
+      <em>${esc(S.set.devise)}</em>
     </div>
+    ${baseInc > 0 ? `<div class="znote">Revenu enregistré ce mois : ${mdot(baseInc)}</div>` : ""}
 
-    <button class="pp" id="zbb_recalc" style="width:100%;margin-bottom:18px;border-radius:28px">Recalculer la répartition</button>
+    <button class="pp zrecalc" id="zbb_recalc">Recalculer la répartition</button>
 
-    <div style="margin-top:4px">${rows}
-      <div style="display:flex;justify-content:space-between;padding:14px 0;font-weight:700">
+    <div class="zrcp">
+      ${rows}
+      <div class="ztot">
         <span>Total affecté</span>
-        <span>${mdot(total)} FCFA</span>
+        <span>${mdot(total)}</span>
       </div>
     </div>
 
-    ${overflow ? `<div class="warn" style="margin-top:12px;text-align:left">Tes besoins estimés dépassent ce revenu de ${mdot(total - amt)} FCFA. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}
+    ${overflow ? `<div class="zwarn">Tes besoins estimés dépassent ce revenu de ${mdot(total - amt)}. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}
 
-    <div class="two" style="margin-top:20px">
+    <div class="two">
       <button class="pb" data-a="close">Fermer</button>
       <button class="pp" id="zbb_valid">Valider le plan</button>
     </div>
-    <p style="font-size:11px;color:var(--mu);text-align:center;margin-top:14px;line-height:1.4">Le plan est une recommandation calculée à partir de tes données enregistrées. Il ne crée pas automatiquement de transactions.</p>`);
+    <p class="zfoot">Le plan est une recommandation calculée à partir de tes données enregistrées. Il ne crée pas automatiquement de transactions.</p>`);
 
+  $("#zbb_amt").oninput = (e) => {
+    e.target.style.width = Math.max(1.4, e.target.value.length + 0.4) + "ch";
+  };
   $("#zbb_recalc").onclick = () => {
     const v = parseFloat($("#zbb_amt").value) || 0;
     S.zbbSim = v;
@@ -2615,7 +2742,7 @@ function accueil() {
   S.cp = 0;
   CM = CM % m.length;
   const card = (t, v, k, extra, badge, cls) => `<button class="hcard ${cls || ""}" data-a="hgo" data-t="${k}"><div class="hct">${t}</div><div class="hcv"><span class="am2">${dot(v)}</span>${CHEVR}${badge || ""}</div>${extra || ""}</button>`;
-  return `<div class="hmx ${S.hide ? "hid" : ""}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide ? "Afficher" : "Masquer"} les montants">${SVG(S.hide ? EYEOFF : EYE)}</button><button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button></div>
+  return `<div class="hmx ${S.hide ? "hid" : ""}"><div class="hbar"><button class="hbtn" data-a="hide" aria-label="${S.hide ? "Afficher" : "Masquer"} les montants">${SVG(S.hide ? EYEOFF : EYE)}</button><div class="hbr"><button class="hbtn dark" data-a="zbb" aria-label="Plan d\u2019allocation ZBB">${ZBBICO}</button><button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button></div></div>
   <div class="hsc"><div class="hbub${pop}" id="cb"><span>${m[CM]}</span></div><button class="hadvb" data-a="cow" aria-label="Conseil suivant">${ADV}</button></div>
   <div class="hpickw"><button class="hpill" data-a="hsel">${HL[hk] || "D\xE9penses"}${SVG(CHEV)}</button></div>
   <div class="hamt${+ha > 0 ? " on" : ""}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2, String(ha).length + 0.2)}ch;font-size:${hfs(String(ha).length)}px"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
@@ -2936,31 +3063,6 @@ function budgetTab() {
 
 function accSheet() {
   S.inAcc = true;
-  if ((S.budgetTab || "acc") === "zbb") {
-    const plan = (() => { try { return JSON.parse(S.set.zbbPlan || "null"); } catch(e) { return null; } })();
-    const h = homeStats();
-    sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <span>Budget</span>
-      <div style="display:flex;gap:6px">
-        <button class="fch" data-a="budgetTab" data-t="acc">Comptes</button>
-        <button class="fch on" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
-      </div>
-    </div>
-    <div style="text-align:center;padding:28px 10px 10px">
-      <div style="font-size:13px;color:var(--mu);margin-bottom:6px">Plan d’allocation validé</div>
-      <div style="font-size:34px;font-weight:700;letter-spacing:-1px">${plan ? mdot(plan.amt) : "—"} <small style="font-size:16px;font-weight:500;color:var(--mu)">${esc(S.set.devise)}</small></div>
-      ${plan ? `<p style="color:var(--mu);font-size:13px;margin-top:8px">Validé le ${fdate(plan.date)}</p>` : `<p style="color:var(--mu);font-size:14px;margin-top:12px">Aucun plan validé pour le moment.</p>`}
-    </div>
-    ${plan && plan.items ? `<div class="box" style="margin-top:8px">${plan.items.map(i => `
-      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ln)">
-        <div><b>${esc(i.name)}</b><small style="display:block;color:var(--mu)">${esc(i.sub||"")}</small></div>
-        <div style="text-align:right"><b>${mdot(i.amt)}</b><small style="display:block;color:var(--mu)">${i.pct}%</small></div>
-      </div>`).join("")}
-      <div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700"><span>Total</span><span>${mdot(plan.total)}</span></div>
-    </div>` : ""}
-    <div class="two one" style="margin-top:20px"><button class="pp" data-a="zbb">${plan ? "Modifier le plan" : "Créer mon plan ZBB"}</button></div>`);
-    return;
-  }
   const list = accList();
   if (!S.acc.length) {
     sheet(`<div class="sh-t">Comptes</div>
@@ -2985,13 +3087,7 @@ function accSheet() {
     ...S.tx.filter((t) => itemOf(t.itemId) && mine(t.compte)).map((t) => ({ k: "t", o: t, d: t.date, c: t.creeLe || "" }))
   ].sort((p, q) => (q.d + q.c).localeCompare(p.d + p.c)).slice(0, 20);
   const chips = list.map((x) => `<button class="fch ${x.id === a.id ? "on" : ""}" data-a="accsel" data-id="${x.id}">${esc(x.nom)}</button>`).join("") + '<button class="fch" data-a="addAcc" aria-label="Ajouter">+</button>';
-  sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <span>Budget</span>
-      <div style="display:flex;gap:6px">
-        <button class="fch ${(S.budgetTab||"acc")==="acc"?"on":""}" data-a="budgetTab" data-t="acc">Comptes</button>
-        <button class="fch ${(S.budgetTab||"acc")==="zbb"?"on":""}" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
-      </div>
-    </div>
+  sheet(`<div class="sh-t">COMPTES</div>
     <div class="fchips wrap">${chips}</div>
     <div class="acard">
       ${a.virt ? "" : `<button class="aedit" data-a="editAcc" data-id="${a.id}" aria-label="Modifier">${SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')}</button>`}
@@ -3394,10 +3490,10 @@ function render() {
     document.body.classList.toggle("hm", S.tab === "home");
   }
   if (document.documentElement) document.documentElement.classList.toggle("bh", gr);
-  const T = { debts: "Dettes", exp: "Budget", shop: "Courses", set: "R\xE9glages" }[S.tab], hdr = `<div class="hbar"><button class="hbtn" data-a="${S.tab === "set" ? "gear" : "back"}" aria-label="Retour">${BACK}</button>${S.tab === "set" ? "<span></span>" : `<button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button>`}</div><div class="ptr"><h1 class="ptt">${T}</h1>${S.tab === "exp" ? '<button class="pill2" data-a="accs">Comptes</button>' : ""}</div>`;
+  const T = { debts: "Dettes", exp: "Budget", shop: "Courses", set: "R\xE9glages" }[S.tab], hdr = `<div class="hbar"><button class="hbtn" data-a="${S.tab === "set" ? "gear" : "back"}" aria-label="Retour">${BACK}</button>${S.tab === "set" ? "<span></span>" : `<button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button>`}</div><div class="ptr"><h1 class="ptt">${T}</h1>${S.tab === "exp" ? '<div class="ptrb"><button class="pill2" data-a="zbb">Plan ZBB</button><button class="pill2" data-a="accs">Comptes</button></div>' : ""}</div>`;
   $("#app").innerHTML = (S.tab === "home" ? "" : hdr) + (S.tab === "set" ? setTab : TABS[S.tab][1])();
   const fz = '<div class="fz"></div>';
-  $("#fab").innerHTML = { home: fz + '<button class="fabp" data-a="zbb">✦ Mon plan ZBB</button>', shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
+  $("#fab").innerHTML = { shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
 }
 // === DETTES : DÉTAIL ET FORMULAIRES ===
 
@@ -3737,10 +3833,7 @@ document.addEventListener("click", (e) => {
   } else if (a === "hadd") hadd();
   else if (a === "cow") cowSay(1);
   else if (a === "zbb") zbbModal();
-  else if (a === "budgetTab") {
-    S.budgetTab = D.t;
-    accSheet();
-  }
+
   else if (a === "back") {
     S.tab = "home";
     S.cp = 1;
