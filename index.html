@@ -1499,23 +1499,8 @@ body {
   margin-right: 6px;
   display: block;
 }
-.zbb-fab {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(100px + var(--sb));
-  z-index: 15;
-  background: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 30px;
-  padding: 14px 28px;
-  font-weight: 700;
-  font-size: 15px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.22);
-  white-space: nowrap;
-}
-html[data-theme=dark] .zbb-fab { box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+
+html[data-theme=dark] 
 .adv {
   height: 106px;
   width: auto;
@@ -1529,45 +1514,11 @@ html[data-theme=dark] .zbb-fab { box-shadow: 0 8px 24px rgba(0,0,0,.5); }
   0%, 100% { transform: scale(1) translateY(0); }
   50% { transform: scale(1.03) translateY(-2px); }
 }
-.hadvb:active .zbb-fab {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(100px + var(--sb));
-  z-index: 15;
-  background: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 30px;
-  padding: 14px 28px;
-  font-weight: 700;
-  font-size: 15px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.22);
-  white-space: nowrap;
-}
-html[data-theme=dark] .zbb-fab { box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-.adv {
+.hadvb:active .adv {
   animation: none;
   transform: scale(0.96);
 }
-html[data-theme=dark] .zbb-fab {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(100px + var(--sb));
-  z-index: 15;
-  background: var(--ink);
-  color: var(--bg);
-  border: 0;
-  border-radius: 30px;
-  padding: 14px 28px;
-  font-weight: 700;
-  font-size: 15px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.22);
-  white-space: nowrap;
-}
-html[data-theme=dark] .zbb-fab { box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-.adv {
+html[data-theme=dark] .adv {
   filter: invert(1);
 }
 .hpickw {
@@ -2670,7 +2621,7 @@ function accueil() {
   <div class="hamt${+ha > 0 ? " on" : ""}"><input id="h_amt" type="number" inputmode="decimal" placeholder="0" value="${esc(ha)}" style="width:${Math.max(1.2, String(ha).length + 0.2)}ch;font-size:${hfs(String(ha).length)}px"><em>${esc(S.set.devise)}</em><button class="hplus" data-a="hadd" aria-label="Ajouter">+</button></div>
   <div class="hcards">${card("Dettes", h.rD, "debts", "", h.nl ? `<i class="hbadge" aria-label="${h.nl} en retard">${h.nl}</i>` : "", "dt")}
   ${card("D\xE9penses", h.spent, "DEP")}${card("Revenus", h.inc, "REV")}${card("\xC9pargne", h.sav, "EPA")}${card("Courses", h.shV, "SHOP")}</div>
-  <button class="zbb-fab" data-a="zbb">✦ Mon plan ZBB</button>
+  
   </div>`;
 }
 
@@ -2985,6 +2936,31 @@ function budgetTab() {
 
 function accSheet() {
   S.inAcc = true;
+  if ((S.budgetTab || "acc") === "zbb") {
+    const plan = (() => { try { return JSON.parse(S.set.zbbPlan || "null"); } catch(e) { return null; } })();
+    const h = homeStats();
+    sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span>Budget</span>
+      <div style="display:flex;gap:6px">
+        <button class="fch" data-a="budgetTab" data-t="acc">Comptes</button>
+        <button class="fch on" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
+      </div>
+    </div>
+    <div style="text-align:center;padding:28px 10px 10px">
+      <div style="font-size:13px;color:var(--mu);margin-bottom:6px">Plan d’allocation validé</div>
+      <div style="font-size:34px;font-weight:700;letter-spacing:-1px">${plan ? mdot(plan.amt) : "—"} <small style="font-size:16px;font-weight:500;color:var(--mu)">${esc(S.set.devise)}</small></div>
+      ${plan ? `<p style="color:var(--mu);font-size:13px;margin-top:8px">Validé le ${fdate(plan.date)}</p>` : `<p style="color:var(--mu);font-size:14px;margin-top:12px">Aucun plan validé pour le moment.</p>`}
+    </div>
+    ${plan && plan.items ? `<div class="box" style="margin-top:8px">${plan.items.map(i => `
+      <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ln)">
+        <div><b>${esc(i.name)}</b><small style="display:block;color:var(--mu)">${esc(i.sub||"")}</small></div>
+        <div style="text-align:right"><b>${mdot(i.amt)}</b><small style="display:block;color:var(--mu)">${i.pct}%</small></div>
+      </div>`).join("")}
+      <div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700"><span>Total</span><span>${mdot(plan.total)}</span></div>
+    </div>` : ""}
+    <div class="two one" style="margin-top:20px"><button class="pp" data-a="zbb">${plan ? "Modifier le plan" : "Créer mon plan ZBB"}</button></div>`);
+    return;
+  }
   const list = accList();
   if (!S.acc.length) {
     sheet(`<div class="sh-t">Comptes</div>
@@ -3012,8 +2988,8 @@ function accSheet() {
   sheet(`<div class="sh-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
       <span>Budget</span>
       <div style="display:flex;gap:6px">
-        <button class="fch on" data-a="accs">Comptes</button>
-        <button class="fch" data-a="zbb">Plan ZBB</button>
+        <button class="fch ${(S.budgetTab||"acc")==="acc"?"on":""}" data-a="budgetTab" data-t="acc">Comptes</button>
+        <button class="fch ${(S.budgetTab||"acc")==="zbb"?"on":""}" data-a="budgetTab" data-t="zbb">Plan ZBB</button>
       </div>
     </div>
     <div class="fchips wrap">${chips}</div>
@@ -3421,7 +3397,7 @@ function render() {
   const T = { debts: "Dettes", exp: "Budget", shop: "Courses", set: "R\xE9glages" }[S.tab], hdr = `<div class="hbar"><button class="hbtn" data-a="${S.tab === "set" ? "gear" : "back"}" aria-label="Retour">${BACK}</button>${S.tab === "set" ? "<span></span>" : `<button class="hbtn" data-a="gear" aria-label="R\xE9glages">${SVG(IC.gear)}</button>`}</div><div class="ptr"><h1 class="ptt">${T}</h1>${S.tab === "exp" ? '<button class="pill2" data-a="accs">Comptes</button>' : ""}</div>`;
   $("#app").innerHTML = (S.tab === "home" ? "" : hdr) + (S.tab === "set" ? setTab : TABS[S.tab][1])();
   const fz = '<div class="fz"></div>';
-  $("#fab").innerHTML = { shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
+  $("#fab").innerHTML = { home: fz + '<button class="fabp" data-a="zbb">✦ Mon plan ZBB</button>', shop: fz + '<button class="fabp" data-a="addShop">+ Ajouter une course</button>', exp: fz + '<button class="fabr" data-a="addExp" aria-label="Ajouter">+</button>', debts: fz + '<button class="fabr" data-a="add" aria-label="Ajouter">+</button>' }[S.tab] || "";
 }
 // === DETTES : DÉTAIL ET FORMULAIRES ===
 
@@ -3761,6 +3737,10 @@ document.addEventListener("click", (e) => {
   } else if (a === "hadd") hadd();
   else if (a === "cow") cowSay(1);
   else if (a === "zbb") zbbModal();
+  else if (a === "budgetTab") {
+    S.budgetTab = D.t;
+    accSheet();
+  }
   else if (a === "back") {
     S.tab = "home";
     S.cp = 1;
