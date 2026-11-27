@@ -288,6 +288,13 @@ nav svg {
   text-align: center;
   padding: 22px 0 18px;
 }
+body.bh .box {
+  background: var(--hc);
+  border-color: transparent;
+}
+body.bh .seg {
+  background: var(--cs);
+}
 .box {
   border: 1px solid var(--ln);
   border-radius: 20px;
@@ -2334,6 +2341,12 @@ function sheet(h) {
 }
 
 function closeSheet() {
+  if (S.ret === "acc") {
+    S.ret = null;
+    accSheet();
+    return;
+  }
+  S.inAcc = false;
   $("#sh").classList.remove("on");
   $("#ov").classList.remove("on");
 }
@@ -2808,6 +2821,7 @@ function budgetTab() {
    =================================================================== */
 
 function accSheet() {
+  S.inAcc = true;
   const list = accList();
   if (!S.acc.length) {
     sheet(`<div class="sh-t">Comptes</div>
@@ -3213,7 +3227,7 @@ function render() {
   cacheSave();
   applyTheme();
   document.documentElement.lang = S.set.lang === "en" ? "en" : "fr";
-  const gr = ["home", "shop", "exp", "debts"].includes(S.tab);
+  const gr = ["home", "shop", "exp", "debts", "set"].includes(S.tab);
   if (document.body) {
     document.body.classList.toggle("bh", gr);
     document.body.classList.toggle("hm", S.tab === "home");
@@ -3455,6 +3469,7 @@ document.addEventListener("click", (e) => {
     return;
   }
   const a = D.a, id = D.id;
+  if (S.inAcc && ["addAcc", "editAcc", "assign", "exp", "tx"].includes(a)) S.ret = "acc";
   if (a === "tab") {
     S.tab = D.t;
     if (D.t === "home") S.cp = 1;
