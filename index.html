@@ -2230,6 +2230,15 @@ html[data-theme=dark] {
   padding: 0;
   max-width: 70%;
 }
+.zamt input::-webkit-outer-spin-button,
+.zamt input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.zamt input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 .zamt em {
   font-style: normal;
   font-size: 15px;
@@ -2313,6 +2322,13 @@ html[data-theme=dark] .zwarn {
   text-align: center;
   line-height: 1.4;
   margin-top: 14px;
+}
+.zdiff {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mu);
+  padding: 0 0 8px;
 }
 @media (prefers-reduced-motion: reduce) {
   .hbub.pop,
@@ -2645,24 +2661,50 @@ let CM = 0;
 function zbbPlan(amt) {
   const h = homeStats();
   const debt = h.rD || 0, spent = h.spent || 0, shop = h.shV || 0, late = h.nl || 0;
-  const pct = (v) => (amt ? Math.round((v / amt) * 100) : 0);
+  const income = Math.max(0, Math.round(amt));
 
-  const factures = Math.round(spent * 0.25) || Math.round(amt * 0.08);
-  const transport = Math.round(spent * 0.08) || Math.round(amt * 0.04);
-  const courses = shop || Math.round(amt * 0.12);
-  const epargneSecu = Math.min(Math.round(amt * 0.10), 1000000);
-  const dettesPrio = Math.min(debt, Math.round(amt * 0.30));
+  // Besoins, du plus vital au moins vital : l'argent est distribué dans cet ordre
+  const needs = [
+    { name: "Factures", sub: "Moyenne mensuelle observée", want: Math.round(spent * 0.25) || Math.round(income * 0.08) },
+    { name: "Transport", sub: "Moyenne mensuelle observée", want: Math.round(spent * 0.08) || Math.round(income * 0.04) },
+    { name: "Courses planifiées", sub: shop ? "Articles prévus dans les 30 prochains jours" : "Estimation courses du mois", want: shop || Math.round(income * 0.12) },
+    { name: "Dettes prioritaires", sub: late ? `${late} échéance(s) en retard` : "Remboursement prioritaire", want: Math.min(debt, Math.round(income * 0.30)) },
+    { name: "Épargne de sécurité", sub: "10 % du revenu, jusqu’à 1 000 000 FCFA", want: Math.min(Math.round(income * 0.10), 1000000) }
+  ];
 
-  const items = [
-    { name: "Dettes prioritaires", sub: late ? `${late} échéance(s) en retard` : "Remboursement prioritaire", amt: dettesPrio },
-    { name: "Factures", sub: "Moyenne mensuelle observée", amt: factures },
-    { name: "Transport", sub: "Moyenne mensuelle observée", amt: transport },
-    { name: "Courses planifiées", sub: shop ? "Articles prévus dans les 30 prochains jours" : "Estimation courses du mois", amt: courses },
-    { name: "Épargne de sécurité", sub: "10 % du revenu, jusqu’à 1 000 000 FCFA", amt: epargneSecu }
-  ].map((x) => ({ ...x, pct: pct(x.amt) }));
+  let left = income;
+  const items = needs.map((n) => {
+    const given = Math.min(n.want, left);
+    left -= given;
+    const cut = given < n.want;
+    return { name: n.name, sub: cut ? `${n.sub} · réduit (besoin ${mdot(n.want)})` : n.sub, amt: given };
+  });
+  const need = needs.reduce((t, n) => t + n.want, 0);
+
+  // Règle ZBB : tout franc restant reçoit une affectation, le reste final est toujours 0
+  if (left > 0) {
+    const debtLeft = Math.max(0, debt - items[3].amt);
+    const extra = Math.min(left, debtLeft);
+    if (extra > 0) {
+      items.push({ name: "Remboursement accéléré", sub: "Surplus affecté aux dettes restantes", amt: extra });
+      left -= extra;
+    }
+  }
+  if (left > 0) {
+    items.push({ name: "Loisirs et imprévus", sub: "Reste du revenu, affecté pour atteindre zéro", amt: left });
+    left = 0;
+  }
+
+  // Pourcentages : arrondis, puis ajustés pour que la somme fasse exactement 100 %
+  items.forEach((x) => (x.pct = income ? Math.round((x.amt / income) * 100) : 0));
+  if (income) {
+    const gap = 100 - items.reduce((t, x) => t + x.pct, 0);
+    const big = items.reduce((m, x) => (x.amt > m.amt ? x : m), items[0]);
+    big.pct += gap;
+  }
 
   const total = items.reduce((t, x) => t + x.amt, 0);
-  return { items, total, overflow: amt > 0 && total > amt };
+  return { items, total, income, deficit: Math.max(0, need - income), overflow: income > 0 && need > income };
 }
 
 function zbbBody(amt) {
@@ -2684,8 +2726,13 @@ function zbbBody(amt) {
         <span>Total affecté</span>
         <span>${mdot(p.total)}</span>
       </div>
+      <div class="zdiff">
+        <span>Revenu − allocations</span>
+        <span>${mdot(p.income - p.total)}</span>
+      </div>
     </div>
-    ${p.overflow ? `<div class="zwarn">Tes besoins estimés dépassent ce revenu de ${mdot(p.total - amt)}. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}`;
+    </div>
+    ${p.overflow ? `<div class="zwarn">Tes besoins estimés dépassent ce revenu de ${mdot(p.deficit)} : les postes en fin de liste sont réduits pour que le total reste égal au revenu. Réduis les postes non essentiels ou ajuste les échéances avec tes créanciers.</div>` : ""}`;
 }
 
 function zbbModal() {
